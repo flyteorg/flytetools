@@ -23,9 +23,9 @@ To create the image ::
 
 The ``Dockerfile`` will
 
-* Re-builds ``swagger-codegen-cli.jar`` with the `fixed go template <https://github.com/grokify/openapi-generator/blob/5a6d4fc1f844181fa113c18c3cf8d2b720f811e8/modules/openapi-generator/src/main/resources/go/model.mustache#L26>`__ using Maven ``mvn clean package``.
+* Re-build ``swagger-codegen-cli.jar`` with the `fixed go template <https://github.com/grokify/openapi-generator/blob/5a6d4fc1f844181fa113c18c3cf8d2b720f811e8/modules/openapi-generator/src/main/resources/go/model.mustache#L26>`__ using Maven ``mvn clean package``.
 
-* Uses the We created a new docker image starting from the [original one](https://hub.docker.com/r/swaggerapi/swagger-codegen-cli)
+* Follows the pattern in the original `CLI <https://github.com/swagger-api/swagger-codegen/blob/master/modules/swagger-codegen-cli/Dockerfile>`_ to create one with our changes.
 
 Currently, the default host is ``localhost`` for both the clients and the version is ``1.0.0``.
 
