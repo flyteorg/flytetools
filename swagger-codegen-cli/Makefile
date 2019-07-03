@@ -1,4 +1,4 @@
-export REPOSITORY=dockernetes
+export REPOSITORY=swagger-codegen-cli
 
 .PHONY: docker_build
 docker_build:
