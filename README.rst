@@ -19,7 +19,8 @@ However, in generating HTTP clients from the publicly available Docker images, w
 
 To create the image ::
 
-    make swagger-codegen-cli
+    cd swagger-codegen-cli
+    make docker_build
 
 The ``Dockerfile`` will
 
