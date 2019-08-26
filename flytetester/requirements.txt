@@ -1,0 +1,5 @@
+--extra-index-url https://test.pypi.org/simple/
+flytekit[sidecar,schema]==0.1.6
+statsd
+opencv-python==3.4.4.19
+k8s-proto>=0.0.2
