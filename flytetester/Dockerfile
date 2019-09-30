@@ -20,10 +20,6 @@ RUN python3.6 -m venv ${VENV}
 RUN ${VENV}/bin/pip install wheel
 
 # Install Python dependencies
-# TODO: Remove the pin of pip. In July-Aug 2019, it seemed like the latest version of pip had issues pulling from private
-#       Python repositories. Pinning to an older version until the issue can be investigated (even though this image
-#       doesn't depend on private repositories).
-RUN ${VENV}/bin/pip install pip==19.0.3
 COPY ./requirements.txt /root
 RUN ${VENV}/bin/pip install -r /root/requirements.txt
 
