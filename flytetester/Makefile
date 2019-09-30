@@ -1,6 +1,5 @@
 PROJECT=flytetester
 DOMAIN=development
-VERSION=$(shell ./version.sh)
 
 serialize:
 	pyflyte -p ${PROJECT} -d ${DOMAIN} serialize workflows
