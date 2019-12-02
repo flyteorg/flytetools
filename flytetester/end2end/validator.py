@@ -121,13 +121,8 @@ def failing_workflows_divide_by_zero_wf_validator(execution, node_execution_list
     assert len(task_execution_list) > 0
 
     # Download the error document and make sure it contains what we think it should contain
-    error_path = node_execution.closure.error.error_uri
-    assert error_path != ''
-    tmp_file_name = '/tmp/output-{}'.format(execution.id.name)
-    proxy = AwsS3Proxy()
-    proxy.download(error_path, tmp_file_name)
-    x = load_proto_from_file(ErrorDocument, tmp_file_name)
-    assert 'division by zero' in x.error.message
+    error_message = node_execution.closure.error.message
+    assert 'division by zero' in error_message
 
     print('Done validating app-workflows-failing-workflows-divide-by-zero-wf!')
     return True
