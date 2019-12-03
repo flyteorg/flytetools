@@ -27,9 +27,8 @@ EXPECTED_EXECUTIONS = [
 ]
 
 # This tells Python where admin is, and also to hit Minio instead of the real S3
-# update_configuration_file('end2end/end2end.config')
-# client = SynchronousFlyteClient(URL.get(), insecure=INSECURE.get())
-client = SynchronousFlyteClient('localhost:30081', insecure=True)
+update_configuration_file('end2end/end2end.config')
+client = SynchronousFlyteClient(URL.get(), insecure=INSECURE.get())
 
 # For every workflow that we test on in run.sh, have a function that can validate the execution response
 # It will be supplied an execution object, a node execution list, and a task execution list
