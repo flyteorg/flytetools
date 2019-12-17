@@ -72,21 +72,21 @@ def sample_batch_task_cachable(wf_params, caching_input, out_str, out_ints):
 
 @inputs(caching_input=Types.Float, in1=Types.Integer)
 @outputs(out1=Types.String)
-@python_task(cacheable=True, cache_version='1.0', cpu_request="200m", cpu_limit="200m", memory_request="500Mi", memory_limit="500Mi")
+@python_task(cache=True, cache_version='1.0', cpu_request="200m", cpu_limit="200m", memory_request="500Mi", memory_limit="500Mi")
 def sub_task(wf_params, caching_input, in1, out1):
     out1.set("hello {}".format(in1))
 
 
 @inputs(caching_input=Types.Float, in1=Types.Integer)
 @outputs(out1=[Types.Integer])
-@python_task(cacheable=True, cache_version='1.0',cpu_request="200m", cpu_limit="200m", memory_request="500Mi", memory_limit="500Mi")
+@python_task(cache=True, cache_version='1.0',cpu_request="200m", cpu_limit="200m", memory_request="500Mi", memory_limit="500Mi")
 def int_sub_task(wf_params, caching_input, in1, out1):
     out1.set([in1, in1 * 2, in1 * 3])
 
 
 @inputs(caching_input=Types.Float, in1=Types.Integer)
 @outputs(out1=Types.Integer)
-@python_task(cacheable=True, cache_version='1.0',cpu_request="200m", cpu_limit="200m", memory_request="500Mi", memory_limit="500Mi")
+@python_task(cache=True, cache_version='1.0',cpu_request="200m", cpu_limit="200m", memory_request="500Mi", memory_limit="500Mi")
 def sq_sub_task(wf_params, caching_input, in1, out1):
     out1.set(in1 * in1)
 
