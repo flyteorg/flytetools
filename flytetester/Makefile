@@ -4,8 +4,9 @@ DOMAIN=development
 serialize:
 	pyflyte -p ${PROJECT} -d ${DOMAIN} serialize workflows
 
-register:
-	pyflyte -p ${PROJECT} -d ${DOMAIN} register workflows
+.PHONY register_staging
+register_staging:
+	pyflyte -p ${PROJECT} -d ${DOMAIN} register -c staging.config workflows
 
 execute:
 	pyflyte -p ${PROJECT} -d ${DOMAIN} lp execute app-workflows-work-one-python-task-w-f
