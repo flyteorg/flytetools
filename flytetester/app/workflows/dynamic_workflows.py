@@ -11,6 +11,7 @@ from flytekit.sdk.types import Types
 from flytekit.sdk.workflow import workflow_class, Input, Output
 from flytekit.sdk.tasks import (
     python_task,
+    dynamic_task,
     inputs,
     outputs,
 )
