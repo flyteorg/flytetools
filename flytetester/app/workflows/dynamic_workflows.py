@@ -20,7 +20,7 @@ from flytekit.sdk.tasks import (
 @inputs(wf_input=Types.Float, cache_disabled=Types.Boolean)
 @outputs(generated=Types.Float)
 @python_task
-def generate_input(wf_params, wf_input, cache_disabled, generated);
+def generate_input(wf_params, wf_input, cache_disabled, generated):
     if cache_disabled:
         generated.set(time.time())
     else:
