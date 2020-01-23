@@ -1,3 +1,5 @@
+export IMAGE_NAME=flytekubecondemo2019
+VERSION=$(shell ./version.sh)
 PROJECT=flytetester
 DOMAIN=development
 
@@ -13,3 +15,11 @@ execute:
 .PHONY: end2end
 end2end_test:
 	flytekit_venv end2end/run.sh
+
+.PHONY: docker_build
+docker_build:
+	scripts/docker_build.sh
+
+.PHONY: docker_push
+docker_push:
+	REGISTRY=docker.io/lyft scripts/docker_build.sh
