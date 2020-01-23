@@ -1,4 +1,4 @@
-export IMAGE_NAME=flytekubecondemo2019
+export IMAGE_NAME=flytetester
 VERSION=$(shell ./version.sh)
 PROJECT=flytetester
 DOMAIN=development
