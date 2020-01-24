@@ -90,7 +90,7 @@ def sq_sub_task(wf_params, caching_input, in1, out1):
 
 @workflow_class
 class OptionallyCachableWorkflow(object):
-    input_if_cached_enabled = Input(Types.Float, default=10, help="Test float input with default")
+    input_if_cached_enabled = Input(Types.Float, default=10.0, help="Test float input with default")
     cache_disabled = Input(Types.Boolean, default=False, help="Whether to disable cache.")
     input_generator = generate_input(wf_input=input_if_cached_enabled, cache_disabled=cache_disabled)
     dynamic_task = sample_batch_task_cachable(caching_input=input_generator.out.generated)
