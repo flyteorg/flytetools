@@ -2,22 +2,18 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import time
-import os
-
-from flytekit.sdk.tasks import sidecar_task
-from flytekit.sdk.workflow import workflow_class
-from k8s.io.api.core.v1 import generated_pb2
-from flytekit.sdk.types import Types
-from flytekit.sdk.workflow import workflow_class, Input, Output
 from flytekit.sdk.tasks import (
     python_task,
     dynamic_task,
     inputs,
     outputs,
 )
+from flytekit.sdk.types import Types
+from flytekit.sdk.workflow import workflow_class, Input
+from six import moves as _six_moves
 
 
-# Uncachable
+# Uncacheable
 @inputs(wf_input=Types.Float, cache_disabled=Types.Boolean)
 @outputs(generated=Types.Float)
 @python_task
