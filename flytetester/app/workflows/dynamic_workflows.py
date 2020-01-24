@@ -24,6 +24,7 @@ def generate_input(wf_params, wf_input, cache_disabled, generated):
         generated.set(wf_input)
 
 
+@inputs(caching_input=Types.Float)
 @outputs(out_ints=[Types.Integer])
 @dynamic_task(cpu_request="200m", cpu_limit="200m", memory_request="500Mi", memory_limit="500Mi")
 def sample_batch_task_sq(wf_params, caching_input, out_ints):
