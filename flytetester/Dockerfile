@@ -30,11 +30,11 @@ COPY . /root
 RUN cp ${VENV}/bin/flytekit_venv /usr/local/bin/flytekit_venv
 RUN chmod a+x /usr/local/bin/flytekit_venv
 
-ARG tag
+ARG DOCKER_IMAGE
 
 # Environment variables we want to bake into the image
 # These are configuration options that can also be specified in a file.  See flytekit.config as an examples
 
 # This tag is supplied by the build script and will be used to determine the version
 # when registering tasks, workflows, and launch plans
-ENV FLYTE_INTERNAL_IMAGE $tag
+ENV FLYTE_INTERNAL_IMAGE "$DOCKER_IMAGE"
