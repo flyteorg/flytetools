@@ -1,12 +1,11 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+from app.workflows.failing_workflows import retryer
 from flytekit.sdk.tasks import (
     dynamic_task,
 )
 from flytekit.sdk.workflow import workflow_class
-
-from flytetester.app.workflows.failing_workflows import retryer
 
 
 @dynamic_task(cpu_request="200m", cpu_limit="200m", memory_request="500Mi", memory_limit="500Mi", retries=3)
