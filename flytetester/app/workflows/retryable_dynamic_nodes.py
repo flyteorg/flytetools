@@ -8,12 +8,17 @@ from flytekit.sdk.tasks import (
 from flytekit.sdk.workflow import workflow_class
 
 
-@dynamic_task(cpu_request="200m", cpu_limit="200m", memory_request="500Mi", memory_limit="500Mi", retries=3)
-def sample_batch_task_cachable(wf_params):
+@dynamic_task(cpu_request="200m", cpu_limit="200m", memory_request="500Mi", memory_limit="500Mi", retries=2)
+def sample_dynamic_task(wf_params):
     yield retryer()
     yield retryer()
+
+
+@dynamic_task(cpu_request="200m", cpu_limit="200m", memory_request="500Mi", memory_limit="500Mi", retries=2)
+def sample_dynamic_task_recursive(wf_params):
+    yield sample_dynamic_task()
 
 
 @workflow_class
 class RetryableDynamicWorkflow(object):
-    dynamic_task = sample_batch_task_cachable()
+    dynamic_task = sample_dynamic_task()
