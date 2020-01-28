@@ -22,7 +22,7 @@ register_staging: docker_push
 	docker run -e FLYTE_CREDENTIALS_CLIENT_ID=${FLYTE_CREDENTIALS_CLIENT_ID} \
 	-e FLYTE_CREDENTIALS_CLIENT_SECRET=${FLYTE_CREDENTIALS_CLIENT_SECRET} \
 	-e FLYTE_CREDENTIALS_AUTH_MODE=basic -e FLYTE_CREDENTIALS_AUTHORIZATION_METADATA_KEY=flyte-authorization \
-	-e FLYTE_CREDENTIALS_SCOPE=svc FLYTE_PLATFORM_AUTH=True \
+	-e FLYTE_CREDENTIALS_SCOPE=svc -e FLYTE_PLATFORM_AUTH=True \
 	docker.io/lyft/${IMAGE_NAME}:${VERSION} /usr/local/bin/flytekit_venv make register_staging_in_container
 
 
