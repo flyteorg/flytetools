@@ -21,4 +21,4 @@ def sample_dynamic_task_recursive(wf_params):
 
 @workflow_class
 class RetryableDynamicWorkflow(object):
-    dynamic_task = sample_dynamic_task()
+    dynamic_task = sample_dynamic_task_recursive()
