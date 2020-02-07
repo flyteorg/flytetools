@@ -30,7 +30,6 @@ EXPECTED_EXECUTIONS = [
 update_configuration_file('end2end/end2end.config')
 client = SynchronousFlyteClient(URL.get(), insecure=INSECURE.get())
 
-
 # For every workflow that we test on in run.sh, have a function that can validate the execution response
 # It will be supplied an execution object, a node execution list, and a task execution list
 # Should return
@@ -54,15 +53,6 @@ def workflow_with_io_validator(execution, node_execution_list, task_execution_li
         else:
             return None  # come back and check later
 
-    # Only come to this logic if we are in the succeeded state.
-
-    # Verify that the inputs are correct
-    b = execution.spec.inputs.literals.get('b')
-    assert b.scalar.primitive.string_value == 'hello_world'
-
-    a = execution.spec.inputs.literals.get('a')
-    assert a.scalar.primitive.integer == 10
-
     # Check node executions
     assert len(node_execution_list) == 3  # one task, plus start/end nodes
     ne = node_execution_list
@@ -71,18 +61,6 @@ def workflow_with_io_validator(execution, node_execution_list, task_execution_li
         if n.id.node_id == 'odd-nums-task':
             task_node = n
     assert task_node is not None
-
-    # Get the output from Minio into the workflow container
-    output_path = task_node.closure.output_uri
-    assert output_path != ''
-    tmp_file_name = '/tmp/output-{}'.format(execution.id.name)
-    proxy = AwsS3Proxy()
-    proxy.download(output_path, tmp_file_name)
-    x = load_proto_from_file(LiteralMap, tmp_file_name)
-    output_map = SdkLiteralMap.from_flyte_idl(x)
-    str_output = output_map.literals['altered_string']
-    assert str_output.scalar.primitive.string_value == 'hello_world_changed'
-
     assert len(task_execution_list) > 0
 
     print('Done validating app-workflows-work-workflow-with-i-o!')
@@ -121,13 +99,8 @@ def failing_workflows_divide_by_zero_wf_validator(execution, node_execution_list
     assert len(task_execution_list) > 0
 
     # Download the error document and make sure it contains what we think it should contain
-    error_path = node_execution.closure.error.error_uri
-    assert error_path != ''
-    tmp_file_name = '/tmp/output-{}'.format(execution.id.name)
-    proxy = AwsS3Proxy()
-    proxy.download(error_path, tmp_file_name)
-    x = load_proto_from_file(ErrorDocument, tmp_file_name)
-    assert 'division by zero' in x.error.message
+    error_message = node_execution.closure.error.message
+    assert 'division by zero' in error_message
 
     print('Done validating app-workflows-failing-workflows-divide-by-zero-wf!')
     return True
