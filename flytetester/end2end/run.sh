@@ -3,7 +3,7 @@
 set -ex
 
 # Create the project name since this is not one of the defaults
-flytekit_venv flyte-cli -h flyteadmin:81 --insecure register-project -n flytetester --identifier flytetester -d "test project" || true
+flytekit_venv flyte-cli -h flyteadmin:81 --insecure register-project -n flytetester --identifier flytetester -d "test_project" || true
 
 ### Need to get Flyte Admin to cluster sync this so that k8s resources are actually created ###
 # Currently, kill the admin pod, so that the init container sync picks up the change.
