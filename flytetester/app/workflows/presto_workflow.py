@@ -8,12 +8,12 @@ from flytekit.common.tasks.presto_task import SdkPrestoTask
 schema = Types.Schema([("a", Types.String), ("b", Types.Integer)])
 
 presto_task = SdkPrestoTask(
+    task_inputs=inputs(ds=Types.String, routing_group=Types.String),
     query="SELECT * FROM hive.city.fact_airport_sessions WHERE ds = '{{ds}}' LIMIT 10",
     output_schema=schema.schema_type,
     routing_group="{{ routing_group }}",
     catalog="hive",
     schema="city",
-    task_inputs=inputs(ds=Types.String, routing_group=Types.String),
 )
 
 
