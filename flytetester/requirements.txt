@@ -2,4 +2,4 @@ flytekit[sidecar,schema]==0.7.0
 statsd
 opencv-python==3.4.4.19
 k8s-proto>=0.0.2
-grpcip==1.27.0
+grpcio==1.27.0
