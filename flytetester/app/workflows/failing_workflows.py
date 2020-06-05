@@ -40,3 +40,13 @@ def retryer(wf_params):
 @workflow_class
 class RetrysWf(object):
     retried_task = retryer()
+
+
+@dynamic_task(retries=2)
+def retryable_dynamic_node(wf_params):
+    yield divider()
+
+
+@workflow_class
+class FailingDynamicNodeWF(object):
+    should_fail_and_retry = retryable_dynamic_node()
