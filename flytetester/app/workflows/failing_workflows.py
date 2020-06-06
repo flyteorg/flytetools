@@ -14,7 +14,7 @@ from flytekit.sdk.workflow import workflow_class
 from flytekit.common.exceptions.base import FlyteRecoverableException
 
 @outputs(answer=Types.Integer)
-@python_task(cpu_request="10m")
+@python_task(cpu_request="40m")
 def divider(wf_params, answer):
     answer.set(1 / 0)
 
@@ -36,7 +36,7 @@ class SleeperWf(object):
     zzz = oversleeper()
 
 
-@python_task(retries=2, cpu_request="10m")
+@python_task(retries=2, cpu_request="20m")
 def retryer(wf_params):
     raise FlyteRecoverableException('This task is supposed to fail')
 
@@ -46,7 +46,7 @@ class RetrysWf(object):
     retried_task = retryer()
 
 
-@dynamic_task(retries=2, cpu_request="10m")
+@dynamic_task(retries=2, cpu_request="40m")
 def retryable_dynamic_node(wf_params):
     yield divider()
 
