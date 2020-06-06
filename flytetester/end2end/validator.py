@@ -147,8 +147,10 @@ def retrys_dynamic_wf_validator(execution, node_execution_list, task_execution_l
         if phase == _WorkflowExecutionPhase.ABORTED or phase == _WorkflowExecutionPhase.SUCCEEDED or \
                 phase == _WorkflowExecutionPhase.TIMED_OUT:
             return False
-        else:
+        elif phase == _WorkflowExecutionPhase.RUNNING:
             return None  # come back and check later
+        else:
+            return False
 
     assert len(task_execution_list) == 4
     print('Done validating app.workflows.failing_workflows.FailingDynamicNodeWF!')
