@@ -4,7 +4,11 @@ from __future__ import print_function
 import time
 from datetime import timedelta
 
-from flytekit.sdk.tasks import outputs, python_task
+from flytekit.sdk.tasks import (
+    python_task,
+    dynamic_task,
+    outputs,
+)
 from flytekit.sdk.types import Types
 from flytekit.sdk.workflow import workflow_class
 from flytekit.common.exceptions.base import FlyteRecoverableException
