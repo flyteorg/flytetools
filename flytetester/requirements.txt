@@ -1,4 +1,4 @@
-https://github.com/lyft/flytekit/zipball/failure-policy@60d319df700e9f269e1f4284675ee365768258ba
+https://github.com/lyft/flytekit//archive/failure-policy/60d319df700e9f269e1f4284675ee365768258ba.zip
 statsd
 opencv-python==3.4.4.19
 k8s-proto>=0.0.2
