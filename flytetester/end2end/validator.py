@@ -25,6 +25,7 @@ EXPECTED_EXECUTIONS = [
     'app.workflows.work.WorkflowWithIO',
     'app.workflows.failing_workflows.RetrysWf',
     'app.workflows.failing_workflows.FailingDynamicNodeWF',
+    'app.workflows.failing_workflows.RunToCompletionWF',
 ]
 
 # This tells Python where admin is, and also to hit Minio instead of the real S3
@@ -157,11 +158,39 @@ def retrys_dynamic_wf_validator(execution, node_execution_list, task_execution_l
     return True
 
 
+def run_to_completion_wf_validator(execution, node_execution_list, task_execution_list):
+    """
+    Validation logic for app.workflows.failing_workflows.RunToCompletionWF
+    This workflow should always fail, but the dynamic node should retry twice.
+
+    :param flytekit.models.execution.Execution execution:
+    :param list[flytekit.models.node_execution.NodeExecution] node_execution_list:
+    :param list[flytekit.models.admin.task_execution.TaskExecution] task_execution_list:
+    :rtype: option[bool]
+    """
+    phase = execution.closure.phase
+    if not phase == _WorkflowExecutionPhase.FAILED:
+        # If not failed, fail the test if the execution is in an unacceptable state
+        if phase == _WorkflowExecutionPhase.ABORTED or phase == _WorkflowExecutionPhase.SUCCEEDED or \
+                phase == _WorkflowExecutionPhase.TIMED_OUT:
+            return False
+        elif phase == _WorkflowExecutionPhase.RUNNING:
+            return None  # come back and check later
+        else:
+            print('Got unexpected phase [{}]'.format(phase))
+            return False
+
+    assert len(task_execution_list) == 4
+    print('Done validating app.workflows.failing_workflows.RunToCompletionWF!')
+    return True
+
+
 validators = {
     'app.workflows.work.WorkflowWithIO': workflow_with_io_validator,
     'app.workflows.failing_workflows.DivideByZeroWf': failing_workflows_divide_by_zero_wf_validator,
     'app.workflows.failing_workflows.RetrysWf': retrys_wf_validator,
     'app.workflows.failing_workflows.FailingDynamicNodeWF': retrys_dynamic_wf_validator,
+    'app.workflows.failing_workflows.RunToCompletionWF': run_to_completion_wf_validator,
 }
 
 

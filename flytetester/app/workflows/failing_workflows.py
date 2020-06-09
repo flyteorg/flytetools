@@ -12,6 +12,7 @@ from flytekit.sdk.tasks import (
 from flytekit.sdk.types import Types
 from flytekit.sdk.workflow import workflow_class
 from flytekit.common.exceptions.base import FlyteRecoverableException
+from flytekit.models.core.workflow import WorkflowMetadata
 
 @outputs(answer=Types.Integer)
 @python_task(cpu_request="40m")
@@ -54,3 +55,16 @@ def retryable_dynamic_node(wf_params):
 @workflow_class
 class FailingDynamicNodeWF(object):
     should_fail_and_retry = retryable_dynamic_node()
+
+
+@workflow_class(on_failure=WorkflowMetadata.OnFailurePolicy.FAIL_AFTER_EXECUTABLE_NODES_COMPLETE)
+class RunToCompletionWF(object):
+    div_by_zero = divider()
+    over_sleeper = oversleeper()
+
+    over_sleeper_2 = oversleeper()
+    over_sleeper_2_2 = oversleeper()
+    div_by_zero_2 = divider()
+
+    over_sleeper_2 >> over_sleeper_2_2 >> div_by_zero_2
+    div_by_zero >> over_sleeper

@@ -16,6 +16,7 @@ flytekit_venv pyflyte -p flytetester -d development -c end2end/end2end.config lp
 flytekit_venv pyflyte -p flytetester -d development -c end2end/end2end.config lp execute app.workflows.failing_workflows.DivideByZeroWf
 flytekit_venv pyflyte -p flytetester -d development -c end2end/end2end.config lp execute app.workflows.failing_workflows.RetrysWf
 flytekit_venv pyflyte -p flytetester -d development -c end2end/end2end.config lp execute app.workflows.failing_workflows.FailingDynamicNodeWF
+flytekit_venv pyflyte -p flytetester -d development -c end2end/end2end.config lp execute app.workflows.failing_workflows.RunToCompletionWF
 
 # Make sure workflow does everything correctly
 flytekit_venv python end2end/validator.py
