@@ -52,6 +52,12 @@ def retryable_dynamic_node(wf_params):
     yield divider()
 
 
+@inputs(in_str=Types.String)
+@python_task()
+def echo(wf_params, in_str):
+    wf_params.logging.warn(in_str)
+
+
 @workflow_class
 class FailingDynamicNodeWF(object):
     should_fail_and_retry = retryable_dynamic_node()
@@ -60,11 +66,11 @@ class FailingDynamicNodeWF(object):
 @workflow_class(on_failure=WorkflowMetadata.OnFailurePolicy.FAIL_AFTER_EXECUTABLE_NODES_COMPLETE)
 class RunToCompletionWF(object):
     div_by_zero = divider()
-    over_sleeper = oversleeper()
+    echo_n = echo(in_str="should never run")
 
-    over_sleeper_2 = oversleeper()
-    over_sleeper_2_2 = oversleeper()
+    echo_n_2 = echo(in_str="should run first")
+    echo_n_2_2 = echo(in_str="should run next")
     div_by_zero_2 = divider()
 
-    over_sleeper_2 >> over_sleeper_2_2 >> div_by_zero_2
-    div_by_zero >> over_sleeper
+    echo_n_2 >> echo_n_2_2 >> div_by_zero_2
+    div_by_zero >> echo_n
