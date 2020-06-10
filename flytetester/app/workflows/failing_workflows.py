@@ -73,5 +73,9 @@ class RunToCompletionWF(object):
     echo_n_2_2 = echo(in_str="should run next")
     div_by_zero_2 = divider()
 
+    should_not_run = divider()
+
     echo_n_2 >> echo_n_2_2 >> div_by_zero_2
     div_by_zero >> echo_n
+    echo_n_2 >> should_not_run
+    div_by_zero >> should_not_run
