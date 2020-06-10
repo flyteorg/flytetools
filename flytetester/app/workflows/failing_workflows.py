@@ -7,6 +7,7 @@ from datetime import timedelta
 from flytekit.sdk.tasks import (
     python_task,
     dynamic_task,
+    inputs,
     outputs,
 )
 from flytekit.sdk.types import Types
