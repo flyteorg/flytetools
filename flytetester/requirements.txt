@@ -1,4 +1,4 @@
-https://github.com/lyft/flytekit/archive/master/a5c65c5a2ef2928a15482b2b16d2071d149f8327.zip
+flytekit[sidecar,schema]==0.9.0b2
 statsd
 opencv-python==3.4.4.19
 k8s-proto>=0.0.2
