@@ -154,7 +154,7 @@ def retrys_dynamic_wf_validator(execution, node_execution_list, task_execution_l
             return False
 
     print('FailingDynamicNodeWF finished with {} task(s)'.format(len(task_execution_list)))
-    assert len(task_execution_list) == 4
+    assert len(task_execution_list) == 3
     print('Done validating app.workflows.failing_workflows.FailingDynamicNodeWF!')
     return True
 
