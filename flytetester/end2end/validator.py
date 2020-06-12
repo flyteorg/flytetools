@@ -153,6 +153,7 @@ def retrys_dynamic_wf_validator(execution, node_execution_list, task_execution_l
         else:
             return False
 
+    print('FailingDynamicNodeWF finished with {} task(s)'.format(len(task_execution_list)))
     assert len(task_execution_list) == 4
     print('Done validating app.workflows.failing_workflows.FailingDynamicNodeWF!')
     return True
@@ -180,6 +181,7 @@ def run_to_completion_wf_validator(execution, node_execution_list, task_executio
             print('Got unexpected phase [{}]'.format(phase))
             return False
 
+    print('RunToCompletionWF finished with {} task(s)'.format(len(task_execution_list)))
     assert len(task_execution_list) == 4
     print('Done validating app.workflows.failing_workflows.RunToCompletionWF!')
     return True
