@@ -30,7 +30,6 @@ COPY . /root
 RUN cp ${VENV}/bin/flytekit_venv /usr/local/bin/flytekit_venv
 RUN chmod a+x /usr/local/bin/flytekit_venv
 
-RUN ${VENV}/bin/pip install /root/flytekit-0.11.2.tar.gz
 ARG DOCKER_IMAGE
 
 # Environment variables we want to bake into the image
