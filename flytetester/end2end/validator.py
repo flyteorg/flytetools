@@ -175,7 +175,7 @@ def run_to_completion_wf_validator(execution, node_execution_list, task_executio
         if phase == _WorkflowExecutionPhase.ABORTED or phase == _WorkflowExecutionPhase.SUCCEEDED or \
                 phase == _WorkflowExecutionPhase.TIMED_OUT:
             return False
-        elif phase == _WorkflowExecutionPhase.RUNNING:
+        elif phase == _WorkflowExecutionPhase.RUNNING or phase == _WorkflowExecutionPhase.FAILING:
             return None  # come back and check later
         else:
             print('Got unexpected phase [{}]'.format(phase))
