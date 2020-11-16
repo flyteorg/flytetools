@@ -1,5 +1,5 @@
-flytekit[sidecar,schema]==0.13.1
+flytekit[sidecar,schema]==0.16.0a0
 statsd
-opencv-python==3.4.4.19
+opencv-python
 k8s-proto>=0.0.2
 grpcio==1.27.2
