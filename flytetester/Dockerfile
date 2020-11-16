@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM ubuntu:focal
 
 WORKDIR /root
 ENV VENV /root/venv
