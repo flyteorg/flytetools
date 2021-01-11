@@ -9,14 +9,14 @@ flytekit_venv flyte-cli -h flyteadmin:81 --insecure register-project -n flytetes
 # Currently, kill the admin pod, so that the init container sync picks up the change.
 
 # First register everything, but make sure to use local Dockernetes admin
-flytekit_venv pyflyte -p flytetester -d development -c end2end/end2end.config register workflows
+flytekit_venv pyflyte -c end2end/end2end.config register -p flytetester -d development workflows
 
 # Kick off workflows
-flytekit_venv pyflyte -p flytetester -d development -c end2end/end2end.config lp execute app.workflows.work.WorkflowWithIO --b hello_world
-flytekit_venv pyflyte -p flytetester -d development -c end2end/end2end.config lp execute app.workflows.failing_workflows.DivideByZeroWf
-flytekit_venv pyflyte -p flytetester -d development -c end2end/end2end.config lp execute app.workflows.failing_workflows.RetrysWf
-flytekit_venv pyflyte -p flytetester -d development -c end2end/end2end.config lp execute app.workflows.failing_workflows.FailingDynamicNodeWF
-flytekit_venv pyflyte -p flytetester -d development -c end2end/end2end.config lp execute app.workflows.failing_workflows.RunToCompletionWF
+flytekit_venv pyflyte -c end2end/end2end.config lp -p flytetester -d development execute app.workflows.work.WorkflowWithIO --b hello_world
+flytekit_venv pyflyte -c end2end/end2end.config lp -p flytetester -d development execute app.workflows.failing_workflows.DivideByZeroWf
+flytekit_venv pyflyte -c end2end/end2end.config lp -p flytetester -d development execute app.workflows.failing_workflows.RetrysWf
+flytekit_venv pyflyte -c end2end/end2end.config lp -p flytetester -d development execute app.workflows.failing_workflows.FailingDynamicNodeWF
+flytekit_venv pyflyte -c end2end/end2end.config lp -p flytetester -d development execute app.workflows.failing_workflows.RunToCompletionWF
 
 # Make sure workflow does everything correctly
 flytekit_venv python end2end/validator.py
