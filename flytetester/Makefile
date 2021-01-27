@@ -1,4 +1,4 @@
-export IMAGE_NAME=flytetester
+export IMAGE_NAME=flytetools
 VERSION=$(shell ./version.sh)
 PROJECT=flytetester
 DOMAIN=development
@@ -20,7 +20,7 @@ register_staging: docker_push
 	-e FLYTE_CREDENTIALS_CLIENT_SECRET=${FLYTE_CREDENTIALS_CLIENT_SECRET} \
 	-e FLYTE_CREDENTIALS_AUTH_MODE=basic -e FLYTE_CREDENTIALS_AUTHORIZATION_METADATA_KEY=flyte-authorization \
 	-e FLYTE_CREDENTIALS_SCOPE=svc -e FLYTE_PLATFORM_AUTH=True \
-	docker.io/lyft/${IMAGE_NAME}:${VERSION} /usr/local/bin/flytekit_venv make register_staging_in_container
+	ghcr.io/nuclyde-io/${IMAGE_NAME}:${VERSION} /usr/local/bin/flytekit_venv make register_staging_in_container
 
 .PHONY: register_production_in_container
 register_production_in_container:
@@ -32,7 +32,7 @@ register_production: docker_push
 	-e FLYTE_CREDENTIALS_CLIENT_SECRET=${FLYTE_CREDENTIALS_CLIENT_SECRET} \
 	-e FLYTE_CREDENTIALS_AUTH_MODE=basic -e FLYTE_CREDENTIALS_AUTHORIZATION_METADATA_KEY=flyte-authorization \
 	-e FLYTE_CREDENTIALS_SCOPE=svc -e FLYTE_PLATFORM_AUTH=True \
-	docker.io/lyft/${IMAGE_NAME}:${VERSION} /usr/local/bin/flytekit_venv make register_production_in_container
+	ghcr.io/nuclyde-io/${IMAGE_NAME}:${VERSION} /usr/local/bin/flytekit_venv make register_production_in_container
 
 .PHONY: register_production_in_container
 register_sandbox_in_container:
