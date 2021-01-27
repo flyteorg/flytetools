@@ -39,8 +39,8 @@ register_sandbox_in_container:
 	pyflyte --config /root/sandbox.config register -p ${PROJECT} -d ${DOMAIN} workflows
 
 .PHONY: register_sandbox
-register_sandbox: docker_build
-	docker run ${IMAGE_NAME}:${VERSION} /usr/local/bin/flytekit_venv make register_sandbox_in_container
+register_sandbox: docker_push
+	docker run ghcr.io/nuclyde-io/${IMAGE_NAME}:${VERSION} /usr/local/bin/flytekit_venv make register_sandbox_in_container
 
 .PHONY: end2end
 end2end_test:
