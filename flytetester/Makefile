@@ -52,7 +52,7 @@ docker_build:
 
 .PHONY: docker_push
 docker_push:
-	REGISTRY=docker.io/lyft scripts/docker_build.sh
+	REGISTRY=ghcr.io/nuclyde-io scripts/docker_build.sh
 
 .PHONY: docker_build_push
 docker_build_push:
