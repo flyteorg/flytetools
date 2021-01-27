@@ -28,6 +28,7 @@ RUN ${VENV}/bin/pip install wheel
 # Install Python dependencies
 COPY ./requirements.txt /root
 RUN ${VENV}/bin/pip install -r /root/requirements.txt
+RUN ${VENV}/bin/pip install papermill
 
 # Copy the actual code
 COPY . /root
