@@ -38,9 +38,9 @@ register_production: docker_push
 register_sandbox_in_container:
 	pyflyte -p ${PROJECT} -d ${DOMAIN} --config /root/sandbox.config register workflows
 
-.PHONY: register_production
-register_sandbox: docker_push
-	docker run docker.io/lyft/${IMAGE_NAME}:${VERSION} /usr/local/bin/flytekit_venv make register_sandbox_in_container
+.PHONY: register_sandbox
+register_sandbox: docker_build
+	docker run ${IMAGE_NAME}:${VERSION} /usr/local/bin/flytekit_venv make register_sandbox_in_container
 
 .PHONY: end2end
 end2end_test:
