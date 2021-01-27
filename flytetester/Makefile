@@ -36,7 +36,7 @@ register_production: docker_push
 
 .PHONY: register_production_in_container
 register_sandbox_in_container:
-	pyflyte -p ${PROJECT} -d ${DOMAIN} --config /root/sandbox.config register workflows
+	pyflyte --config /root/sandbox.config register -p ${PROJECT} -d ${DOMAIN} workflows
 
 .PHONY: register_sandbox
 register_sandbox: docker_build
