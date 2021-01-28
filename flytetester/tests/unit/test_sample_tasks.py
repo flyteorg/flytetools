@@ -14,7 +14,7 @@ def test_find_odd_numbers_with_string():
     assert outs['are_num_odd'] == [True, False]
 
 
-def test_fds():
+def test_dynamic_python():
     res = sample_batch_task_cachable.unit_test(caching_input=10.0)
     assert res == {'out_str': ["I'm the first result", 'hello 0', "I'm after each sub-task result", 'hello 1',
                                "I'm after each sub-task result", 'hello 2', "I'm after each sub-task result",
