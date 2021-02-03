@@ -1,6 +1,3 @@
-from __future__ import absolute_import
-from __future__ import print_function
-
 import time
 from flytekit.sdk.tasks import (
     python_task,
@@ -10,7 +7,6 @@ from flytekit.sdk.tasks import (
 )
 from flytekit.sdk.types import Types
 from flytekit.sdk.workflow import workflow_class, Input
-from six import moves as _six_moves
 
 
 # Uncacheable
@@ -29,8 +25,8 @@ def generate_input(wf_params, wf_input, cache_disabled, generated):
 @dynamic_task(cpu_request="200m", cpu_limit="200m", memory_request="500Mi", memory_limit="500Mi")
 def sample_batch_task_sq(wf_params, caching_input, out_ints):
     res2 = []
-    for i in _six_moves.range(0, 3):
-        task = sq_sub_task(in1=i)
+    for i in range(0, 3):
+        task = sq_sub_task(caching_input=caching_input, in1=i)
         yield task
         res2.append(task.outputs.out1)
     out_ints.set(res2)
@@ -41,25 +37,25 @@ def sample_batch_task_sq(wf_params, caching_input, out_ints):
 @dynamic_task(cpu_request="200m", cpu_limit="200m", memory_request="500Mi", memory_limit="500Mi")
 def sample_batch_task_cachable(wf_params, caching_input, out_str, out_ints):
     res = ["I'm the first result"]
-    for i in _six_moves.range(0, 3):
-        task = sub_task(in1=i)
+    for i in range(0, 3):
+        task = sub_task(caching_input=caching_input, in1=i)
         yield task
         res.append(task.outputs.out1)
         res.append("I'm after each sub-task result")
     res.append("I'm the last result")
 
     res2 = []
-    for i in _six_moves.range(0, 3):
-        task = int_sub_task(in1=i)
+    for i in range(0, 3):
+        task = int_sub_task(caching_input=caching_input, in1=i)
         yield task
         res2.append(task.outputs.out1)
 
     # Nested batch tasks
-    task = sample_batch_task_sq()
+    task = sample_batch_task_sq(caching_input=caching_input)
     yield task
     res2.append(task.outputs.out_ints)
 
-    task = sample_batch_task_sq()
+    task = sample_batch_task_sq(caching_input=caching_input)
     yield task
     res2.append(task.outputs.out_ints)
 
