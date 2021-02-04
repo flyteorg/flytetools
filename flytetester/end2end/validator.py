@@ -3,17 +3,14 @@
 import time
 
 import six
-from flyteidl.core.errors_pb2 import ErrorDocument
-from flyteidl.core.literals_pb2 import LiteralMap
 from flytekit.clients import helpers as _helpers
 from flytekit.clients.friendly import SynchronousFlyteClient
 from flytekit.clis.sdk_in_container.pyflyte import update_configuration_file
 from flytekit.common.core.identifier import WorkflowExecutionIdentifier as _WorkflowExecutionIdentifier
-from flytekit.common.utils import load_proto_from_file
 from flytekit.configuration.platform import URL, INSECURE
-from flytekit.interfaces.data.s3.s3proxy import AwsS3Proxy
-from flytekit.models.literals import LiteralMap as SdkLiteralMap
 from flytekit.models.core.execution import WorkflowExecutionPhase as _WorkflowExecutionPhase
+from flytekit.models.admin.common import Sort
+
 
 PROJECT = 'flytetester'
 DOMAIN = 'development'
@@ -261,12 +258,14 @@ def get_executions():
     Retrieve all relevant executions from Admin
     :rtype: list[flytekit.models.execution.Execution]
     """
-    resp = client.list_executions_paginated(PROJECT, DOMAIN, filters=[])
+    # Since we're dealing with local execution, the top X executions should just be what the run.sh script in this repo
+    # just ran. End-to-end tests currently are never run concurrently.
+    # The only issue this might raise is if there's a mistake somehow, run.sh never really launched for some reason,
+    # and the most recent five executions just happened to match the names in the expected executions list.
+    s = Sort.from_python_std("desc(updated_at)")
+    resp = client.list_executions_paginated(PROJECT, DOMAIN, limit=len(EXPECTED_EXECUTIONS), sort_by=s)
     # The executions returned should correspond to the workflows launched in run.sh
     assert len(resp[0]) == len(EXPECTED_EXECUTIONS)
-    # pagination token should be an empty string, since we're running from an empty database, and we don't kick
-    # off that many executions in an end-to-end test.
-    assert resp[1] == ''
     return resp[0]
 
 
