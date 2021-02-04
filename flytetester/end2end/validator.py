@@ -11,7 +11,6 @@ from flytekit.configuration.platform import URL, INSECURE
 from flytekit.models.core.execution import WorkflowExecutionPhase as _WorkflowExecutionPhase
 from flytekit.models.admin.common import Sort
 
-
 PROJECT = 'flytetester'
 DOMAIN = 'development'
 
@@ -28,6 +27,7 @@ EXPECTED_EXECUTIONS = [
 # This tells Python where admin is, and also to hit Minio instead of the real S3
 update_configuration_file('end2end/end2end.config')
 client = SynchronousFlyteClient(URL.get(), insecure=INSECURE.get())
+
 
 # For every workflow that we test on in run.sh, have a function that can validate the execution response
 # It will be supplied an execution object, a node execution list, and a task execution list
@@ -174,11 +174,13 @@ def run_to_completion_wf_validator(execution, node_execution_list, task_executio
         # If not failed, fail the test if the execution is in an unacceptable state
         if phase == _WorkflowExecutionPhase.ABORTED or phase == _WorkflowExecutionPhase.SUCCEEDED or \
                 phase == _WorkflowExecutionPhase.TIMED_OUT:
+            print('RunToCompletionWF got incorrect phase [{}]'.format(phase))
             return False
-        elif phase == _WorkflowExecutionPhase.RUNNING or phase == _WorkflowExecutionPhase.FAILING:
+        elif phase == _WorkflowExecutionPhase.RUNNING or phase == _WorkflowExecutionPhase.FAILING or \
+                phase == _WorkflowExecutionPhase.UNDEFINED:
             return None  # come back and check later
         else:
-            print('Got unexpected phase [{}]'.format(phase))
+            print('RunToCompletionWF got unexpected phase [{}]'.format(phase))
             return False
 
     print('RunToCompletionWF finished with {} task(s)'.format(len(task_execution_list)))
