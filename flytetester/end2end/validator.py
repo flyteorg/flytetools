@@ -120,10 +120,12 @@ def retrys_wf_validator(execution, node_execution_list, task_execution_list):
         # If not failed, fail the test if the execution is in an unacceptable state
         if phase == _WorkflowExecutionPhase.ABORTED or phase == _WorkflowExecutionPhase.SUCCEEDED or \
                 phase == _WorkflowExecutionPhase.TIMED_OUT:
+            print(f'Error with app.workflows.failing_workflows.RetrysWf, phase is {phase}')
             return False
         else:
             return None  # come back and check later
 
+    print(f"Finished RetrysWf: execution length is {len(task_execution_list)}, should be 3")
     assert len(task_execution_list) == 3
     print('Done validating app.workflows.failing_workflows.RetrysWf!')
     return True
@@ -144,6 +146,7 @@ def retrys_dynamic_wf_validator(execution, node_execution_list, task_execution_l
         # If not failed, fail the test if the execution is in an unacceptable state
         if phase == _WorkflowExecutionPhase.ABORTED or phase == _WorkflowExecutionPhase.SUCCEEDED or \
                 phase == _WorkflowExecutionPhase.TIMED_OUT:
+            print(f'Error with app.workflows.failing_workflows.FailingDynamicNodeWF, phase is {phase}')
             return False
         elif phase == _WorkflowExecutionPhase.RUNNING:
             return None  # come back and check later
