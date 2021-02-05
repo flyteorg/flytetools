@@ -3,17 +3,13 @@
 import time
 
 import six
-from flyteidl.core.errors_pb2 import ErrorDocument
-from flyteidl.core.literals_pb2 import LiteralMap
 from flytekit.clients import helpers as _helpers
 from flytekit.clients.friendly import SynchronousFlyteClient
 from flytekit.clis.sdk_in_container.pyflyte import update_configuration_file
 from flytekit.common.core.identifier import WorkflowExecutionIdentifier as _WorkflowExecutionIdentifier
-from flytekit.common.utils import load_proto_from_file
 from flytekit.configuration.platform import URL, INSECURE
-from flytekit.interfaces.data.s3.s3proxy import AwsS3Proxy
-from flytekit.models.literals import LiteralMap as SdkLiteralMap
 from flytekit.models.core.execution import WorkflowExecutionPhase as _WorkflowExecutionPhase
+from flytekit.models.admin.common import Sort
 
 PROJECT = 'flytetester'
 DOMAIN = 'development'
@@ -31,6 +27,7 @@ EXPECTED_EXECUTIONS = [
 # This tells Python where admin is, and also to hit Minio instead of the real S3
 update_configuration_file('end2end/end2end.config')
 client = SynchronousFlyteClient(URL.get(), insecure=INSECURE.get())
+
 
 # For every workflow that we test on in run.sh, have a function that can validate the execution response
 # It will be supplied an execution object, a node execution list, and a task execution list
@@ -123,10 +120,12 @@ def retrys_wf_validator(execution, node_execution_list, task_execution_list):
         # If not failed, fail the test if the execution is in an unacceptable state
         if phase == _WorkflowExecutionPhase.ABORTED or phase == _WorkflowExecutionPhase.SUCCEEDED or \
                 phase == _WorkflowExecutionPhase.TIMED_OUT:
+            print(f'Error with app.workflows.failing_workflows.RetrysWf, phase is {phase}')
             return False
         else:
             return None  # come back and check later
 
+    print(f"Finished RetrysWf: execution length is {len(task_execution_list)}, should be 3")
     assert len(task_execution_list) == 3
     print('Done validating app.workflows.failing_workflows.RetrysWf!')
     return True
@@ -147,13 +146,16 @@ def retrys_dynamic_wf_validator(execution, node_execution_list, task_execution_l
         # If not failed, fail the test if the execution is in an unacceptable state
         if phase == _WorkflowExecutionPhase.ABORTED or phase == _WorkflowExecutionPhase.SUCCEEDED or \
                 phase == _WorkflowExecutionPhase.TIMED_OUT:
+            print(f'Error with app.workflows.failing_workflows.FailingDynamicNodeWF, phase is {phase}')
             return False
-        elif phase == _WorkflowExecutionPhase.RUNNING:
+        elif phase == _WorkflowExecutionPhase.RUNNING or phase == _WorkflowExecutionPhase.UNDEFINED or \
+                phase == _WorkflowExecutionPhase.FAILING:
             return None  # come back and check later
         else:
+            print(f'FailingDynamicNodeWF got unexpected phase [{phase}]')
             return False
 
-    print('FailingDynamicNodeWF finished with {} task(s)'.format(len(task_execution_list)))
+    print(f'FailingDynamicNodeWF finished with {len(task_execution_list)} task(s), expected 3')
     assert len(task_execution_list) == 3
     print('Done validating app.workflows.failing_workflows.FailingDynamicNodeWF!')
     return True
@@ -174,11 +176,13 @@ def run_to_completion_wf_validator(execution, node_execution_list, task_executio
         # If not failed, fail the test if the execution is in an unacceptable state
         if phase == _WorkflowExecutionPhase.ABORTED or phase == _WorkflowExecutionPhase.SUCCEEDED or \
                 phase == _WorkflowExecutionPhase.TIMED_OUT:
+            print('RunToCompletionWF got incorrect phase [{}]'.format(phase))
             return False
-        elif phase == _WorkflowExecutionPhase.RUNNING or phase == _WorkflowExecutionPhase.FAILING:
+        elif phase == _WorkflowExecutionPhase.RUNNING or phase == _WorkflowExecutionPhase.FAILING or \
+                phase == _WorkflowExecutionPhase.UNDEFINED:
             return None  # come back and check later
         else:
-            print('Got unexpected phase [{}]'.format(phase))
+            print('RunToCompletionWF got unexpected phase [{}]'.format(phase))
             return False
 
     print('RunToCompletionWF finished with {} task(s)'.format(len(task_execution_list)))
@@ -261,12 +265,14 @@ def get_executions():
     Retrieve all relevant executions from Admin
     :rtype: list[flytekit.models.execution.Execution]
     """
-    resp = client.list_executions_paginated(PROJECT, DOMAIN, filters=[])
+    # Since we're dealing with local execution, the top X executions should just be what the run.sh script in this repo
+    # just ran. End-to-end tests currently are never run concurrently.
+    # The only issue this might raise is if there's a mistake somehow, run.sh never really launched for some reason,
+    # and the most recent five executions just happened to match the names in the expected executions list.
+    s = Sort.from_python_std("desc(updated_at)")
+    resp = client.list_executions_paginated(PROJECT, DOMAIN, limit=len(EXPECTED_EXECUTIONS), sort_by=s)
     # The executions returned should correspond to the workflows launched in run.sh
     assert len(resp[0]) == len(EXPECTED_EXECUTIONS)
-    # pagination token should be an empty string, since we're running from an empty database, and we don't kick
-    # off that many executions in an end-to-end test.
-    assert resp[1] == ''
     return resp[0]
 
 
