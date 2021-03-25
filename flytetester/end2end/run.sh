@@ -20,7 +20,7 @@ arrIN=(${FLYTE_INTERNAL_IMAGE//:/ })
 VERSION=${arrIN[1]}
 
 #flytekit_venv pyflyte -c end2end/end2end.config lp -p flytetester -d development execute app.workflows.failing_workflows.DivideByZeroWf
-flytectl --config /opt/go/config.yaml get launchplan -p flytetester -d development app.workflows.failing_workflows.RetrysWf --version ${VERSION} --execFile DivideByZeroWf.yaml
+flytectl --config /opt/go/config.yaml get launchplan -p flytetester -d development app.workflows.failing_workflows.DivideByZeroWf --version ${VERSION} --execFile DivideByZeroWf.yaml
 flytectl --config /opt/go/config.yaml create execution --execFile DivideByZeroWf.yaml -p flytetester -d development
 
 #flytekit_venv pyflyte -c end2end/end2end.config lp -p flytetester -d development execute app.workflows.failing_workflows.RetrysWf
@@ -28,11 +28,11 @@ flytectl --config /opt/go/config.yaml get launchplan -p flytetester -d developme
 flytectl --config /opt/go/config.yaml create execution --execFile Retrys.yaml -p flytetester -d development
 
 #flytekit_venv pyflyte -c end2end/end2end.config lp -p flytetester -d development execute app.workflows.failing_workflows.FailingDynamicNodeWF
-flytectl --config /opt/go/config.yaml get launchplan -p flytetester -d development app.workflows.failing_workflows.RetrysWf --version ${VERSION} --execFile FailingDynamicNodeWF.yaml
+flytectl --config /opt/go/config.yaml get launchplan -p flytetester -d development app.workflows.failing_workflows.FailingDynamicNodeWF --version ${VERSION} --execFile FailingDynamicNodeWF.yaml
 flytectl --config /opt/go/config.yaml create execution --execFile FailingDynamicNodeWF.yaml -p flytetester -d development
 
 #flytekit_venv pyflyte -c end2end/end2end.config lp -p flytetester -d development execute app.workflows.failing_workflows.RunToCompletionWF
-flytectl --config /opt/go/config.yaml get launchplan -p flytetester -d development app.workflows.failing_workflows.RetrysWf --version ${VERSION} --execFile RunToCompletionWF.yaml
+flytectl --config /opt/go/config.yaml get launchplan -p flytetester -d development app.workflows.failing_workflows.RunToCompletionWF --version ${VERSION} --execFile RunToCompletionWF.yaml
 flytectl --config /opt/go/config.yaml create execution --execFile RunToCompletionWF.yaml -p flytetester -d development
 
 # Make sure workflow does everything correctly
