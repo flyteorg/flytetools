@@ -44,3 +44,8 @@ ARG DOCKER_IMAGE
 # This tag is supplied by the build script and will be used to determine the version
 # when registering tasks, workflows, and launch plans
 ENV FLYTE_INTERNAL_IMAGE "$DOCKER_IMAGE"
+
+RUN mkdir /opt/go
+WORKDIR /opt/go
+RUN curl -s https://raw.githubusercontent.com/flyteorg/flytectl/master/install.sh | bash
+WORKDIR /root

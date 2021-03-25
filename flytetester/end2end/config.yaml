@@ -1,0 +1,6 @@
+admin:
+  endpoint: flyteadmin:81
+  insecure: true
+logger:
+  show-source: true
+  level: 1
