@@ -48,5 +48,5 @@ ENV FLYTE_INTERNAL_IMAGE "$DOCKER_IMAGE"
 RUN mkdir /opt/go
 WORKDIR /opt/go
 RUN curl -s https://raw.githubusercontent.com/flyteorg/flytectl/master/install.sh | bash
-WORKDIR /root
 ENV PATH="/opt/go/bin:$PATH"
+WORKDIR /root
