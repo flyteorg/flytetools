@@ -46,6 +46,7 @@ ARG DOCKER_IMAGE
 ENV FLYTE_INTERNAL_IMAGE "$DOCKER_IMAGE"
 
 RUN mkdir /opt/go
+COPY ./end2end/config.yaml /opt/go
 WORKDIR /opt/go
 RUN curl -s https://raw.githubusercontent.com/flyteorg/flytectl/master/install.sh | bash
 ENV PATH="/opt/go/bin:$PATH"
