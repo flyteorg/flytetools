@@ -205,7 +205,7 @@ def process_executions(execution_names):
     This is the main loop of the end to end test.  Basically it's an infinite loop, that only exits if everything
     has finished (either successfully or unsuccessfully), pausing for five seconds at a time.
 
-    For each executionthe list of expected executions given in the input, it will query the Admin service for
+    For each execution in the list of expected executions given in the input, it will query the Admin service for
     the execution object, all node executions, and all task executions, and hand these objects off to the validator
     function for the respective workflow.
 
