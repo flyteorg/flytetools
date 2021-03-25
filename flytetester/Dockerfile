@@ -49,3 +49,4 @@ RUN mkdir /opt/go
 WORKDIR /opt/go
 RUN curl -s https://raw.githubusercontent.com/flyteorg/flytectl/master/install.sh | bash
 WORKDIR /root
+ENV PATH="/opt/go/bin:$PATH"
