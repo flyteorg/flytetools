@@ -30,11 +30,11 @@ COPY ./requirements.txt /root
 RUN ${VENV}/bin/pip install -r /root/requirements.txt
 
 # Flytectl installation
-RUN mkdir /opt/go
+RUN mkdir -p /opt/go/bin
 # This will be removed once flytectl respects command line settings
 COPY ./end2end/config.yaml /opt/go
 WORKDIR /opt/go
-RUN curl -s https://raw.githubusercontent.com/flyteorg/flytectl/v0.1.2/install.sh | bash
+# RUN curl -s https://raw.githubusercontent.com/flyteorg/flytectl/v0.1.2/install.sh | bash
 ENV PATH="/opt/go/bin:$PATH"
 WORKDIR /root
 
