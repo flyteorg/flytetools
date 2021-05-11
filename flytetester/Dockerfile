@@ -45,7 +45,7 @@ COPY . /root
 RUN cp ${VENV}/bin/flytekit_venv /usr/local/bin/flytekit_venv
 RUN chmod a+x /usr/local/bin/flytekit_venv
 
-  ARG DOCKER_IMAGE
+ARG DOCKER_IMAGE
 
 # Environment variables we want to bake into the image
 # These are configuration options that can also be specified in a file.  See flytekit.config as an examples
