@@ -1,4 +1,4 @@
-flytekit[sidecar,schema]==0.19.0
+flytekit[sidecar,schema]==0.20.1
 statsd
 opencv-python
 k8s-proto>=0.0.2

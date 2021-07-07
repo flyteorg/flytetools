@@ -55,6 +55,5 @@ docker_push:
 	REGISTRY=ghcr.io/flyteorg scripts/docker_build.sh
 
 .PHONY: docker_build_push
-docker_build_push:
-	docker_build
-	docker_push
+docker_build_push: docker_build docker_push
+	echo "built"
