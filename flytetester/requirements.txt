@@ -1,4 +1,4 @@
-flytekit[sidecar,schema]==0.20.1
+https://github.com/flyteorg/flytekit/archive/df02935d115c04344cf8f60d124e4166c97870a5.zip#egg=flytekit[sidecar,schema]
 statsd
 opencv-python
 k8s-proto>=0.0.2
