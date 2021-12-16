@@ -32,6 +32,11 @@ RUN apt-get install -y postgresql-client
 RUN python3.8 -m venv ${VENV}
 RUN ${VENV}/bin/pip install wheel
 
+# Install CPython and PyArrow explicitly needed by flytekit.
+RUN apt-get install cython3
+RUN ${VENV}/bin/pip install --upgrade cython
+RUN ${VENV}/bin/pip install pyarrow
+
 # Install Python dependencies
 RUN ${VENV}/bin/pip install flytekit
 RUN ${VENV}/bin/pip install ipdb
