@@ -1,0 +1,17 @@
+
+****************************************************************
+*               Welcome to the Flyte Portal                    *
+*                                                              *
+* Please keep in mind you are running in a live K8s cluster!!  *
+* This cluster comes with some utilities installed:            *
+*                                                              *
+* To access Redis                                              *
+*   $ redis-cli -h redis-resource-manager -a <password>        *
+*                                                              *
+* To access postgres:                                          *
+*   $ psql -h <host> -U flyteadmin -d flyteadmin               *
+*                                                              *
+* To activate the virtual environment with flytekit:           *
+*   $ source /root/venv/bin/activate                           *
+*                                                              *
+****************************************************************
