@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: portalpod
+  namespace: flyte
+spec:
+  containers:
+  - args:
+    - sleep
+    - infinity
+    image: ghcr.io/flyteorg/flyteportal:v0.42.0
+    imagePullPolicy: Always
+    name: portalcontainer
+    resources:
+      limits:
+        cpu: 500m
+        memory: 500Mi
+      requests:
+        cpu: 500m
+        memory: 500Mi
+    env:
+    - name: HOST
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP
+  restartPolicy: Never
+  serviceAccount: default
