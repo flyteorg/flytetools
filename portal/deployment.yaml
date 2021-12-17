@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: portal
-        image: ghcr.io/flyteorg/flyteportal:0.42.0
+        image: ghcr.io/flyteorg/flyteportal:v0.42.0
         command:
           - sleep
           - infinity
