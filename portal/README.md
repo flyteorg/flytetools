@@ -8,7 +8,7 @@ other IAM- or VPC- protected services.
 Create portal deployment in `flyte` namespace:
 
 ```bash
-curl https://raw.githubusercontent.com/flyteorg/flytetools/master/portal/deployment.yaml | sed "s/namespace: flyte/namespace: union/" | kubectl apply -f -
+kubectl apply -f https://raw.githubusercontent.com/flyteorg/flytetools/master/portal/deployment.yaml
 ```
 
 ### Use a different namespace
