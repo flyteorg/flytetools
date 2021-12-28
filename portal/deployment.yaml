@@ -15,6 +15,7 @@ spec:
       labels:
         app: portal
     spec:
+      serviceAccountName: default
       containers:
       - name: portal
         image: ghcr.io/flyteorg/flyteportal:v0.42.0
