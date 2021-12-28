@@ -20,7 +20,7 @@ curl https://raw.githubusercontent.com/flyteorg/flytetools/master/portal/deploym
 ### Use a different service account
 
 ```bash
-curl https://raw.githubusercontent.com/flyteorg/flytetools/master/portal/deployment.yaml | sed "s/serviceAccount: default/serviceAccount: foo/" | kubectl apply -f -
+curl https://raw.githubusercontent.com/flyteorg/flytetools/master/portal/deployment.yaml | sed "s/serviceAccountName: default/serviceAccountName: foo/" | kubectl apply -f -
 ```
 
 ## Open a shell into the deployed pod
