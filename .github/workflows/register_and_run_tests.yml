@@ -1,0 +1,108 @@
+name: Register and execute tests
+
+on:
+  workflow_call:
+    inputs:
+      badge_version:
+        description: "Flyte release version, only used to generate badges"
+        required: true
+        type: string
+      flytesnacks_version:
+        description: "flytesnacks version"
+        required: true
+        type: string
+      priorities:
+        description: "Priorities of tests to register (comma-separated)"
+        required: true
+        type: string
+    secrets:
+      client_secret:
+        required: true
+      DNS:
+        required: true
+      # Secrets cannot start with the `gihub_` prefix as per https://docs.github.com/en/actions/security-guides/encrypted-secrets
+      gh_token:
+        required: true
+      actor:
+        required: true
+
+jobs:
+  register-examples:
+    name: Register Examples
+    runs-on: flyteorg-infra
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup flytectl
+        uses: unionai/flytectl-setup-action@v0.0.1
+      - name: Create secret
+        env:
+          CLIENT_SECRET: ${{ secrets.client_secret }}
+        run: |
+          echo $CLIENT_SECRET >> /home/runner/secret_location
+      - name: Register flytesnacks examples
+        uses: unionai/flyte-register-action@v0.0.2
+        with:
+          flytesnacks: true
+          project: flytesnacks
+          version: "${{ inputs.flytesnacks_version }}"
+          domain: development
+          config: functional-tests/config.yaml
+
+  run-tests:
+    name: Run Tests
+    needs: ["register-examples"]
+    runs-on: flyteorg-infra
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Setup Flytekit
+        env:
+          CLIENT_SECRET: ${{ secrets.client_secret }}
+          DNS: ${{ secrets.DNS }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install flytekit
+          pip freeze
+          echo $CLIENT_SECRET >> /home/runner/secret_location
+          flyte-cli setup-config --host=$DNS
+      # TODO: add a badge for when test is running
+      - name: Run tests
+        id: run-tests
+        env:
+          VERSION: "${{ inputs.flytesnacks_version }}"
+          PRIORITIES: "${{ inputs.priorities }}"
+          FLYTE_CREDENTIALS_CLIENT_SECRET_FROM_FILE: /home/runner/secret_location
+        run: |
+          run_tests_output=$(./functional-tests/run-tests.py $VERSION $PRIORITIES)
+          echo "$run_tests_output"  # for debugging purposes
+          badges=$(echo "$run_tests_output" | tail -n1)
+          echo "$badges"  # for debugging purposes
+          echo ::set-output name=badges::${badges}
+      # TODO: Add a slack update after tests run
+    outputs:
+      badges: ${{ steps.run-tests.outputs.badges }}
+
+  generate-badges:
+    name: Generate badges
+    needs: run-tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        badge: "${{ fromJson(needs.run-tests.outputs.badges) }}"
+    steps:
+      - name: Generate badge
+        uses: RubbaBoy/BYOB@v1.2.1
+        with:
+          NAME: "${{ inputs.badge_version }}"
+          LABEL: "${{ matrix.badge.label }}"
+          STATUS: "${{ matrix.badge.status }}"
+          COLOR: "${{ matrix.badge.color }}"
+          # TODO: maybe we could have our own logo?
+          ICON: 'github'
+          GITHUB_TOKEN: ${{ secrets.gh_token }}
+          REPOSITORY: unionai/gh-badges
+          ACTOR: ${{ secrets.actor }}
+          BRANCH: ${{ matrix.badge.label }}
