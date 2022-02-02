@@ -1,0 +1,15 @@
+name: Go Generate
+
+on:
+  workflow_call:
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    name: Go Generate
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.16'
+      - name: Go generate and diff
+        run: DELTA_CHECK=true make generate

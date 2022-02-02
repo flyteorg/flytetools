@@ -1,0 +1,41 @@
+name: End to End tests
+
+on:
+  workflow_call:
+jobs:
+  endtoend:
+    name: End to End tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: unionai/flytectl-setup-action@v0.0.1
+        name: Setup flytectl
+      - id: load-docker-cache
+        name: Load Docker Cache
+        uses: actions/cache@v1
+        with:
+          path: /tmp/tmp/docker-images
+          key: /tmp/docker-images-${{ github.event.after }}
+      - name: Create Sandbox Cluster
+        run: |
+          cp /tmp/tmp/docker-images/snapshot.tar snapshot.tar
+          flytectl config init
+          flytectl sandbox start --source=$(pwd)
+      - name: Prime docker cache
+        run: |
+          flytectl sandbox exec -- docker load -i /root/snapshot.tar
+      - name: Upgrade Helm charts
+        run: |
+          flytectl sandbox exec -- helm repo add flyteorg https://flyteorg.github.io/flyte
+          flytectl sandbox exec -- helm repo update
+          flytectl sandbox exec -- helm upgrade flyte -n flyte --kubeconfig=/etc/rancher/k3s/k3s.yaml flyteorg/flyte -f /flyteorg/share/flyte/values.yaml --set ${{ github.event.repository.name }}.image.repository=flyteorg/${{ github.event.repository.name }},${{ github.event.repository.name }}.image.tag=latest
+      - name: End2End
+        env:
+          KUBECONFIG: /home/runner/.flyte/k3s/k3s.yaml
+        run: |
+          kubectl cluster-info
+          kubectl get pods -n kube-system
+          echo "current-context:" $(kubectl config current-context)
+          echo "environment-kubeconfig:" ${KUBECONFIG}
+          make end2end_execute
