@@ -46,6 +46,10 @@ register_sandbox: docker_push
 end2end_test:
 	flytekit_venv end2end/run.sh
 
+.PHONY: functional_test
+functional_test:
+	flytekit_venv functional-tests/run.sh
+
 .PHONY: docker_build
 docker_build:
 	scripts/docker_build.sh

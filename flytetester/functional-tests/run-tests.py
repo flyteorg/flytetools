@@ -18,37 +18,7 @@ MAX_ATTEMPTS = 60
 # starting with "core".
 FLYTESNACKS_WORKFLOW_GROUPS: Mapping[str, List[Tuple[str, dict]]] = {
     "core": [
-        ("core.control_flow.chain_tasks.chain_tasks_wf", {}),
-        ("core.control_flow.dynamics.wf", {"s1": "Pear", "s2": "Earth"}),
-        ("core.control_flow.map_task.my_map_workflow", {"a": [1, 2, 3, 4, 5]}),
-        # Workflows that use nested executions cannot be launched via flyteremote.
-        # This issue is being tracked in https://github.com/flyteorg/flyte/issues/1482.
-        # ("core.control_flow.run_conditions.multiplier", {"my_input": 0.5}),
-        # ("core.control_flow.run_conditions.multiplier_2", {"my_input": 10}),
-        # ("core.control_flow.run_conditions.multiplier_3", {"my_input": 5}),
-        # ("core.control_flow.run_conditions.basic_boolean_wf", {"seed": 5}),
-        # ("core.control_flow.run_conditions.bool_input_wf", {"b": True}),
-        # ("core.control_flow.run_conditions.nested_conditions", {"my_input": 0.4}),
-        # ("core.control_flow.run_conditions.consume_outputs", {"my_input": 0.4, "seed": 7}),
-        # ("core.control_flow.run_merge_sort.merge_sort", {"numbers": [5, 4, 3, 2, 1], "count": 5}),
-        ("core.control_flow.subworkflows.parent_wf", {"a": 3}),
-        ("core.control_flow.subworkflows.nested_parent_wf", {"a": 3}),
-        ("core.flyte_basics.basic_workflow.my_wf", {"a": 50, "b": "hello"}),
-        # Getting a 403 for the wikipedia image
-        # ("core.flyte_basics.files.rotate_one_workflow", {"in_image": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Julia_set_%28C_%3D_0.285%2C_0.01%29.jpg"}),
-        ("core.flyte_basics.folders.download_and_rotate", {}),
         ("core.flyte_basics.hello_world.my_wf", {}),
-        ("core.flyte_basics.lp.my_wf", {"val": 4}),
-        ("core.flyte_basics.lp.go_greet", {"day_of_week": "5", "number": 3, "am": True}),
-        ("core.flyte_basics.named_outputs.my_wf", {}),
-        # # Getting a 403 for the wikipedia image
-        # # ("core.flyte_basics.reference_task.wf", {}),
-        ("core.type_system.custom_objects.wf", {"x": 10, "y": 20}),
-        # Enums are not supported in flyteremote
-        # ("core.type_system.enums.enum_wf", {"c": "red"}),
-        ("core.type_system.schema.df_wf", {"a": 42}),
-        ("core.type_system.typed_schema.wf", {}),
-        ("my.imperative.workflow.example", {"in1": "hello", "in2": "foo"}),
     ],
 }
 
@@ -115,11 +85,11 @@ def valid(workflow_group):
     return workflow_group in FLYTESNACKS_WORKFLOW_GROUPS.keys()
 
 
-def run(release_tag: str, priorities: List[str]) -> List[Dict[str, str]]:
+def run(release_tag: str, priorities: List[str], config_file_path) -> List[Dict[str, str]]:
     remote = FlyteRemote.from_config(
         default_project="flytesnacks",
         default_domain="development",
-        config_file_path=f"./functional-tests/config",
+        config_file_path=config_file_path,
     )
 
     # For a given release tag and priority, this function filters the workflow groups from the flytesnacks manifest file. For
@@ -178,8 +148,17 @@ if __name__ == "__main__":
     # tests manifest.
     flytesnacks_release_tag = sys.argv[1]
     priorities = sys.argv[2].split(',')
+    config_file = sys.argv[3]
+    return_non_zero_on_failure = sys.argv[4]
 
-    results = run(flytesnacks_release_tag, priorities)
+    results = run(flytesnacks_release_tag, priorities, config_file)
 
     # Write a json object in its own line describing the result of this run to stdout
     print(f"Result of run:\n{json.dumps(results)}")
+
+    # Return a non-zero exit code if core fails
+    if return_non_zero_on_failure is not None:
+        # find the result
+        for result in results:
+            if result['label'] == return_non_zero_on_failure and result['status'] != 'passing':
+                sys.exit(1)
