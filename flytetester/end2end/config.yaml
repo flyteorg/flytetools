@@ -1,5 +1,5 @@
 admin:
-  endpoint: flyteadmin:81
+  endpoint: localhost:30081
   insecure: true
 logger:
   show-source: true
