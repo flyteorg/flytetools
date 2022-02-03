@@ -8,6 +8,6 @@ set -ex
 LATEST_VERSION=v0.3.27
 
 # We register the workflows here to avoid a race condition between registering the latest version of flytesnacks and the execution of the functional tests.
-flytectl register examples -p flytesnacks -d development --version $LATEST_VERSION
+# flytectl register examples -p flytesnacks -d development --version $LATEST_VERSION
 
 flytekit_venv python functional-tests/run-tests.py $LATEST_VERSION P0,P1 functional-tests/functional-test.config core
