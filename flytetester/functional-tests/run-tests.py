@@ -115,11 +115,11 @@ def valid(workflow_group):
     return workflow_group in FLYTESNACKS_WORKFLOW_GROUPS.keys()
 
 
-def run(release_tag: str, priorities: List[str]) -> List[Dict[str, str]]:
+def run(release_tag: str, priorities: List[str], config_file_path) -> List[Dict[str, str]]:
     remote = FlyteRemote.from_config(
         default_project="flytesnacks",
         default_domain="development",
-        config_file_path=f"./functional-tests/config",
+        config_file_path=config_file_path,
     )
 
     # For a given release tag and priority, this function filters the workflow groups from the flytesnacks manifest file. For
@@ -178,8 +178,17 @@ if __name__ == "__main__":
     # tests manifest.
     flytesnacks_release_tag = sys.argv[1]
     priorities = sys.argv[2].split(',')
+    config_file = sys.argv[3]
+    return_non_zero_on_failure = sys.argv[4]
 
-    results = run(flytesnacks_release_tag, priorities)
+    results = run(flytesnacks_release_tag, priorities, config_file)
 
     # Write a json object in its own line describing the result of this run to stdout
     print(f"Result of run:\n{json.dumps(results)}")
+
+    # Return a non-zero exit code if core fails
+    if return_non_zero_on_failure is not None:
+        # find the result
+        for result in results:
+            if result['label'] == return_non_zero_on_failure and result['status'] != 'passing':
+                sys.exit(1)
