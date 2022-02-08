@@ -2,7 +2,9 @@ name: Unit Test
 
 on:
   workflow_call:
-
+    secrets:
+      FLYTE_BOT_PAT:
+        required: true
 jobs:
   tests:
     name: Run Unit Test
