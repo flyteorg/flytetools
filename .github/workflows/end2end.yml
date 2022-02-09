@@ -2,6 +2,11 @@ name: End to End tests
 
 on:
   workflow_call:
+    inputs:
+      priorities:
+        description: "Priorities of tests to register (comma-separated)"
+        required: true
+        type: string
 jobs:
   endtoend:
     name: End to End tests
@@ -11,6 +16,9 @@ jobs:
         uses: actions/checkout@v2
       - uses: unionai/flytectl-setup-action@v0.0.1
         name: Setup flytectl
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
       - id: load-docker-cache
         name: Load Docker Cache
         uses: actions/cache@v1
@@ -29,13 +37,24 @@ jobs:
         run: |
           flytectl sandbox exec -- helm repo add flyteorg https://flyteorg.github.io/flyte
           flytectl sandbox exec -- helm repo update
-          flytectl sandbox exec -- helm upgrade flyte -n flyte --kubeconfig=/etc/rancher/k3s/k3s.yaml flyteorg/flyte -f /flyteorg/share/flyte/values.yaml --set ${{ github.event.repository.name }}.image.repository=flyteorg/${{ github.event.repository.name }},${{ github.event.repository.name }}.image.tag=latest
-      - name: End2End
+          flytectl sandbox exec -- helm upgrade flyte -n flyte --kubeconfig=/etc/rancher/k3s/k3s.yaml flyteorg/flyte -f /flyteorg/share/flyte/values.yaml --wait --set ${{ github.event.repository.name }}.image.repository=flyteorg/${{ github.event.repository.name }},${{ github.event.repository.name }}.image.tag=latest
+      - name: Setup Flytekit
         env:
-          KUBECONFIG: /home/runner/.flyte/k3s/k3s.yaml
+          DNS: "127.0.0.1:30081"
         run: |
-          kubectl cluster-info
-          kubectl get pods -n kube-system
-          echo "current-context:" $(kubectl config current-context)
-          echo "environment-kubeconfig:" ${KUBECONFIG}
-          make end2end_execute
+          python -m pip install --upgrade pip
+          pip install flytekit
+          pip freeze
+      - name: Register flytesnacks examples
+        uses: unionai/flyte-register-action@v0.0.2
+        with:
+          flytesnacks: true
+          project: flytesnacks
+          version: "latest"
+          domain: development
+      - name: Run tests
+        id: run-tests
+        env:
+          PRIORITIES: "${{ inputs.priorities }}"
+        run: |
+          ./boilerplate/flyte/end2end/end2end.sh
