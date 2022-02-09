@@ -1,0 +1,30 @@
+name: Docker Build Images
+
+on:
+  workflow_call:
+
+jobs:
+  build-docker:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - id: load-docker-cache
+        name: Load Docker Cache
+        uses: actions/cache@v1
+        with:
+          path: /tmp/tmp/docker-images
+          key: /tmp/docker-images-${{ github.event.after }}
+          restore-keys: |
+            /tmp/docker-images-${{ github.event.before }}
+            /tmp/docker-images-${{ github.event.pull_request.base.sha }}
+      - name: Prime docker cache
+        run: (docker load -i /tmp/tmp/docker-images/snapshot-builder.tar || true) && (docker load -i /tmp/tmp/docker-images/snapshot.tar || true)
+      - name: Build dockerfile
+        run: |
+          docker build -t flyteorg/${{ github.event.repository.name }}:builder --target builder --cache-from=flyteorg/${{ github.event.repository.name }}:builder .
+          docker build -t flyteorg/${{ github.event.repository.name }}:latest --cache-from=flyteorg/${{ github.event.repository.name }}:builder .
+
+      - name: Tag and cache docker image
+        run: mkdir -p /tmp/tmp/docker-images && docker save flyteorg/${{ github.event.repository.name }}:builder -o /tmp/tmp/docker-images/snapshot-builder.tar && docker save flyteorg/${{ github.event.repository.name }}:latest -o /tmp/tmp/docker-images/snapshot.tar
