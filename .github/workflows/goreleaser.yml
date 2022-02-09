@@ -1,16 +1,7 @@
-name: Bump Version
+name: Go Releaser
 
 on:
   workflow_call:
-    inputs:
-      version:
-        description: "Release version"
-        required: true
-        type: string
-      dry_run:
-        description: "Dry Run"
-        required: false
-        type: boolean
     secrets:
       FLYTE_BOT_PAT:
         required: true
@@ -26,20 +17,9 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.17
-      - name: Dry Run
-        id: extract_command
-        run:|
-          if [[ ${{ inputs.dry_run }} ]]
-          then
-            echo "::set-output name=command::'release'"
-          else
-            echo "::set-output name=command::'--snapshot  --skip-publish'"
-          fi
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
-          version: latest
-          args: ${{ steps.extract_command.outputs.command }} --rm-dist
+          args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.FLYTE_BOT_PAT }}
-          GORELEASER_CURRENT_TAG: ${{ inputs.version }}
