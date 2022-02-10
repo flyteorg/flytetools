@@ -11,6 +11,10 @@ on:
         description: "Version of image"
         required: true
         type: string
+      repository:
+        description: "Repository Name"
+        required: false
+        type: string
       push:
         description: "Push to registry"
         required: false
@@ -33,7 +37,7 @@ jobs:
         with:
           username: "${{ secrets.FLYTE_BOT_USERNAME }}"
           password: "${{ secrets.FLYTE_BOT_PAT }}"
-          image_name: ${{ github.repository }}
+          image_name: ${{ inputs.repository }}
           image_tag: latest,${{ github.sha }},${{ inputs.version }}
           push_git_tag: ${{ inputs.push }}
           dockerfile: ${{ inputs.dockerfile }}
