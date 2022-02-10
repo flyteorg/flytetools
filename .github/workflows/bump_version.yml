@@ -5,7 +5,7 @@ on:
     outputs:
       version:
         description: "Tag name"
-        value: ${{ jobs.bump_version.outputs.tag }}
+        value: ${{ jobs.bump_version.outputs.version }}
     secrets:
       FLYTE_BOT_PAT:
         required: true
