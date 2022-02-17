@@ -40,6 +40,7 @@ jobs:
           image_name: ${{ inputs.repository }}
           image_tag: latest,${{ github.sha }},${{ inputs.version }}
           push_git_tag: ${{ inputs.push }}
+          push_image_and_stages: ${{ inputs.push }}
           dockerfile: ${{ inputs.dockerfile }}
           registry: ghcr.io
           build_extra_args: "--compress=true"
