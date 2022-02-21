@@ -7,10 +7,6 @@ on:
         description: "Priorities of tests to register (comma-separated)"
         required: true
         type: string
-      preupgrade:
-        description: "Enable pre upgrade test"
-        required: false
-        type: string
 jobs:
   endtoend:
     name: End to End tests
