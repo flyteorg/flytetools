@@ -50,6 +50,7 @@ jobs:
           version: "latest"
           domain: development
       - name: Pre Upgrade Tests
+        if: ${{ github.event.repository.name == 'flyteadmin' }}
         env:
           PRIORITIES: "${{ inputs.priorities }}"
         run: |
