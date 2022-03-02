@@ -25,7 +25,7 @@ jobs:
           python-version: 3.8
       - id: load-docker-cache
         name: Load Docker Cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: /tmp/tmp/docker-images
           key: ${{ inputs.cache_key }}
