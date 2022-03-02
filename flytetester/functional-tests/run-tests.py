@@ -59,7 +59,7 @@ def run_launch_plan(remote, version, workflow_name, inputs):
     return remote.execute(lp, inputs=inputs, wait=False)
 
 
-def schedule_workflow_group(tag: str, workflow_group: str, remote: FlyteRemote) -> bool:
+def schedule_workflow_group(tag: str, workflow_group: str, remote: FlyteRemote, terminate_on_failure: bool) -> bool:
     """
     Schedule all workflows executions and return True if all executions succeed, otherwise
     return False.
@@ -104,6 +104,8 @@ def schedule_workflow_group(tag: str, workflow_group: str, remote: FlyteRemote) 
     # Report failing cases
     for lp in non_succeeded_lps:
         print(f"    workflow={lp.spec.launch_plan.name}, execution_id={lp.id.name}")
+        if terminate_on_failure:
+            remote.terminate(lp, "aborting execution scheduled in functional test")
     return False
 
 
@@ -115,7 +117,7 @@ def valid(workflow_group):
     return workflow_group in FLYTESNACKS_WORKFLOW_GROUPS.keys()
 
 
-def run(release_tag: str, priorities: List[str], config_file_path) -> List[Dict[str, str]]:
+def run(release_tag: str, priorities: List[str], config_file_path, terminate_workflow_on_failure: bool) -> List[Dict[str, str]]:
     remote = FlyteRemote.from_config(
         default_project="flytesnacks",
         default_domain="development",
@@ -140,10 +142,9 @@ def run(release_tag: str, priorities: List[str], config_file_path) -> List[Dict[
             continue
 
         try:
-            workflows_succeeded = schedule_workflow_group(flytesnacks_release_tag, workflow_group, remote)
+            workflows_succeeded = schedule_workflow_group(flytesnacks_release_tag, workflow_group, remote, terminate_workflow_on_failure)
         except Exception:
             print(traceback.format_exc())
-
             workflows_succeeded = False
 
         if workflows_succeeded:
@@ -180,8 +181,9 @@ if __name__ == "__main__":
     priorities = sys.argv[2].split(',')
     config_file = sys.argv[3]
     return_non_zero_on_failure = sys.argv[4]
+    terminate_workflow_on_failure = True if sys.argv[5] == 'True' else False
 
-    results = run(flytesnacks_release_tag, priorities, config_file)
+    results = run(flytesnacks_release_tag, priorities, config_file, terminate_workflow_on_failure)
 
     # Write a json object in its own line describing the result of this run to stdout
     print(f"Result of run:\n{json.dumps(results)}")
