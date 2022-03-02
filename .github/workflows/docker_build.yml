@@ -2,11 +2,16 @@ name: Docker Build Images
 
 on:
   workflow_call:
-
+    outputs:
+      cache_key:
+        description: "Docker Cache key"
+        value: ${{ jobs.build_docker.outputs.cache_key }}
 jobs:
-  build-docker:
+  build_docker:
     name: Build Docker Image
     runs-on: ubuntu-latest
+    outputs:
+      cache_key: ${{ steps.cache_key.outputs.cache_key }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -15,10 +20,13 @@ jobs:
         uses: actions/cache@v1
         with:
           path: /tmp/tmp/docker-images
-          key: /tmp/docker-images-${{ github.event.after }}
+          key: /tmp/docker-images-${{ github.run_id }}
           restore-keys: |
-            /tmp/docker-images-${{ github.event.before }}
-            /tmp/docker-images-${{ github.event.pull_request.base.sha }}
+            /tmp/docker-images-
+      - name: Set cache key output
+        id: cache_key
+        run: |
+          echo ::set-output name=cache_key::/tmp/docker-images-${{ github.run_id }}
       - name: Prime docker cache
         run: (docker load -i /tmp/tmp/docker-images/snapshot-builder.tar || true) && (docker load -i /tmp/tmp/docker-images/snapshot.tar || true)
       - name: Build dockerfile
