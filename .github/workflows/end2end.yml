@@ -7,6 +7,10 @@ on:
         description: "Priorities of tests to register (comma-separated)"
         required: true
         type: string
+      cache_key:
+        description: "Cache key for docker image"
+        required: true
+        type: string
 jobs:
   endtoend:
     name: End to End tests
@@ -24,7 +28,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: /tmp/tmp/docker-images
-          key: /tmp/docker-images-${{ github.event.after }}
+          key: ${{ inputs.cache_key }}
       - name: Create Sandbox Cluster
         run: |
           cp /tmp/tmp/docker-images/snapshot.tar snapshot.tar

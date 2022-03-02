@@ -2,6 +2,11 @@ name: Integration tests
 
 on:
   workflow_call:
+    inputs:
+      cache_key:
+        description: "Cache key for docker image"
+        required: true
+        type: string
 jobs:
   integration:
     name: Integration tests
@@ -14,7 +19,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: /tmp/tmp/docker-images
-          key: /tmp/docker-images-${{ github.event.after }}
+          key: ${{ inputs.cache_key }}
       - name: Prime docker cache
         run: docker load -i /tmp/tmp/docker-images/snapshot-builder.tar || true
       - uses: engineerd/setup-kind@v0.5.0
