@@ -61,7 +61,7 @@ jobs:
         env:
           PRIORITIES: "${{ inputs.priorities }}"
         run: |
-          ./boilerplate/flyte/end2end/end2end.sh
+          make end2end_execute
       - name: Upgrade Helm charts
         run: |
           flytectl sandbox exec -- helm repo add flyteorg https://flyteorg.github.io/flyte
@@ -71,4 +71,4 @@ jobs:
         env:
           PRIORITIES: "${{ inputs.priorities }}"
         run: |
-          ./boilerplate/flyte/end2end/end2end.sh
+          make end2end_execute
