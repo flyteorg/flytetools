@@ -37,13 +37,6 @@ jobs:
       - name: Prime docker cache
         run: |
           flytectl sandbox exec -- docker load -i /root/snapshot.tar
-      - name: Upgrade Helm charts
-        run: |
-          flytectl sandbox exec -- helm repo add flyteorg https://flyteorg.github.io/flyte
-          flytectl sandbox exec -- helm repo update
-          flytectl sandbox exec -- helm upgrade flyte -n flyte --kubeconfig=/etc/rancher/k3s/k3s.yaml flyteorg/flyte -f /flyteorg/share/flyte/values.yaml --wait --set flyte.${{ github.event.repository.name }}.image.repository=flyteorg/${{ github.event.repository.name }},flyte.${{ github.event.repository.name }}.image.tag=latest
-
-          flytectl sandbox exec -- k3s kubectl get pods -n flyte -oyaml
       - name: Setup Flytekit
         run: |
           python -m pip install --upgrade pip
@@ -66,7 +59,9 @@ jobs:
         run: |
           flytectl sandbox exec -- helm repo add flyteorg https://flyteorg.github.io/flyte
           flytectl sandbox exec -- helm repo update
-          flytectl sandbox exec -- helm upgrade flyte -n flyte --kubeconfig=/etc/rancher/k3s/k3s.yaml flyteorg/flyte -f /flyteorg/share/flyte/values.yaml --wait --set ${{ github.event.repository.name }}.image.repository=flyteorg/${{ github.event.repository.name }},${{ github.event.repository.name }}.image.tag=latest
+          flytectl sandbox exec -- helm upgrade flyte -n flyte --kubeconfig=/etc/rancher/k3s/k3s.yaml flyteorg/flyte -f /flyteorg/share/flyte/values.yaml --wait --set flyte.${{ github.event.repository.name }}.image.repository=flyteorg/${{ github.event.repository.name }},flyte.${{ github.event.repository.name }}.image.tag=latest
+
+          flytectl sandbox exec -- k3s kubectl get pods -n flyte -oyaml
       - name: Post Upgrade Tests
         env:
           PRIORITIES: "${{ inputs.priorities }}"
