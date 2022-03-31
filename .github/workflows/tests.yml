@@ -2,6 +2,11 @@ name: Unit Test
 
 on:
   workflow_call:
+    inputs:
+      go-version:
+        default: "1.18"
+        required: false
+        type: string
     secrets:
       FLYTE_BOT_PAT:
         required: true
@@ -15,7 +20,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.18
+          go-version: ${{ inputs.go-version }}
       - name: Unit Tests
         env:
           GITHUB_TOKEN: ${{ secrets.FLYTE_BOT_PAT }}
