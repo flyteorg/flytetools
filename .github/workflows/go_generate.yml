@@ -13,6 +13,7 @@ jobs:
     name: Go Generate
     steps:
       - uses: actions/checkout@v1
+      - uses: arduino/setup-protoc@v1
       - uses: actions/setup-go@v2
         with:
           go-version: ${{ inputs.go-version }}
