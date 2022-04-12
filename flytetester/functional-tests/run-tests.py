@@ -73,7 +73,7 @@ def schedule_workflow_group(tag: str, workflow_group: str, remote: FlyteRemote) 
     # Wait for all launch plans to finish
     attempt = 0
     while attempt == 0 or (
-        not all([lp.is_complete for lp in launch_plans]) and attempt < MAX_ATTEMPTS
+        not all([lp.is_done for lp in launch_plans]) and attempt < MAX_ATTEMPTS
     ):
         attempt += 1
         print(
