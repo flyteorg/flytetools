@@ -27,6 +27,8 @@ jobs:
         run: make install && make test_unit_codecov
       - name: Push CodeCov
         uses: codecov/codecov-action@v1.5.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.FLYTE_BOT_PAT }}        
         with:
           file: coverage.txt
           flags: unittests
