@@ -1,4 +1,4 @@
-FROM docker.io/maven:3.6.1-jdk-8 AS builder
+FROM docker.io/maven:3.8.6-jdk-8 AS builder
 WORKDIR /tmp
 RUN git clone https://github.com/swagger-api/swagger-codegen.git
 WORKDIR /tmp/swagger-codegen

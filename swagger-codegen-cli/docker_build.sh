@@ -18,33 +18,36 @@ if [ -n "$REGISTRY" ]; then
   fi
 fi
 
-docker build -t "$IMAGE_NAME:latest" .
+docker buildx create --name swagger-codegen-cli-builder --driver docker-container --bootstrap --use
+docker buildx build --platform=linux/amd64,linux/arm64 -t "$IMAGE_NAME:latest" .
 echo "$IMAGE_NAME:latest built locally."
 
 
-if [ -n "$REGISTRY" ]; then
+# if [ -n "$REGISTRY" ]; then
 
-  if [ -n "${DOCKER_REGISTRY_PASSWORD}" ]; then
-    docker login --username="$DOCKER_REGISTRY_USERNAME" --password="$DOCKER_REGISTRY_PASSWORD"
-  fi
+#   if [ -n "${DOCKER_REGISTRY_PASSWORD}" ]; then
+#     docker login --username="$DOCKER_REGISTRY_USERNAME" --password="$DOCKER_REGISTRY_PASSWORD"
+#   fi
 
-  SHA_IMAGE_TAG="${REGISTRY}/${IMAGE_NAME}:${GIT_SHA}"
+#   SHA_IMAGE_TAG="${REGISTRY}/${IMAGE_NAME}:${GIT_SHA}"
 
-  docker tag "${IMAGE_NAME}:latest" "$SHA_IMAGE_TAG"
+#   docker tag "${IMAGE_NAME}:latest" "$SHA_IMAGE_TAG"
 
-  docker push "$SHA_IMAGE_TAG"
-  echo "${SHA_IMAGE_TAG} pushed to remote"
+#   docker push "$SHA_IMAGE_TAG"
+#   echo "${SHA_IMAGE_TAG} pushed to remote"
 
-  if [ -n "$RELEASE_SEMVER" ]; then
+#   if [ -n "$RELEASE_SEMVER" ]; then
 
-    SEMVER_IMAGE_TAG="${REGISTRY}/${IMAGE_NAME}:${RELEASE_SEMVER}"
+#     SEMVER_IMAGE_TAG="${REGISTRY}/${IMAGE_NAME}:${RELEASE_SEMVER}"
 
-    docker tag "${IMAGE_NAME}:latest" "$SEMVER_IMAGE_TAG"
-    docker push "$SEMVER_IMAGE_TAG"
-    echo "${SEMVER_IMAGE_TAG} pushed to remote"
-  fi
+#     docker tag "${IMAGE_NAME}:latest" "$SEMVER_IMAGE_TAG"
+#     docker push "$SEMVER_IMAGE_TAG"
+#     echo "${SEMVER_IMAGE_TAG} pushed to remote"
+#   fi
 
-fi
+# fi
+
+docker buildx rm swagger-codegen-cli-builder
 
 echo ""
 echo "success"
