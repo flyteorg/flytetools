@@ -9,7 +9,7 @@ echo ""
 GIT_SHA=$(git rev-parse HEAD)
 RELEASE_SEMVER=$(git describe --tags --exact-match "$GIT_SHA" 2>/dev/null) || true
 
-TAGS="$IMAGE_NAME:latest"
+TAG_ARGS="-t $IMAGE_NAME:latest"
 PUSH_ARG=""
 
 if [ -n "$REGISTRY" ]; then
@@ -25,20 +25,20 @@ if [ -n "$REGISTRY" ]; then
   fi
 
   SHA_IMAGE_TAG="${REGISTRY}/${IMAGE_NAME}:${GIT_SHA}"
-  TAGS="$TAGS,$SHA_IMAGE_TAG"
+  TAG_ARGS="$TAG_ARGS -t $SHA_IMAGE_TAG"
   PUSH_ARG="--push"
 
   if [ -n "$RELEASE_SEMVER" ]; then
     SEMVER_IMAGE_TAG="${REGISTRY}/${IMAGE_NAME}:${RELEASE_SEMVER}"
-    TAGS="$TAGS,$SEMVER_IMAGE_TAG"
+    TAG_ARGS="$TAG_ARGS -t $SEMVER_IMAGE_TAG"
   fi
 fi
 
 docker buildx create --name swagger-codegen-cli-builder --driver docker-container --bootstrap --use
-docker buildx build --platform=linux/amd64,linux/arm64 -t $TAGS $PUSH_ARG .
+docker buildx build --platform=linux/amd64,linux/arm64 $TAG_ARGS $PUSH_ARG .
 docker buildx rm swagger-codegen-cli-builder
 
 echo "Built images"
 if [ -n "$PUSH_ARG" ]; then
-  echo "Pushed images to repository '${REGISTRY}' with tags '$TAGS'"
+  echo "Pushed images to repository '${REGISTRY}'"
 fi
