@@ -29,10 +29,27 @@ jobs:
           echo ::set-output name=cache_key::/tmp/docker-images-${{ github.run_id }}
       - name: Prime docker cache
         run: (docker load -i /tmp/tmp/docker-images/snapshot-builder.tar || true) && (docker load -i /tmp/tmp/docker-images/snapshot.tar || true)
-      - name: Build dockerfile
-        run: |
-          docker build -t flyteorg/${{ github.event.repository.name }}:builder --target builder --cache-from=flyteorg/${{ github.event.repository.name }}:builder .
-          docker build -t flyteorg/${{ github.event.repository.name }}:latest --cache-from=flyteorg/${{ github.event.repository.name }}:builder .
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build builder image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          tags: flyteorg/${{ github.event.repository.name }}:builder
+          target: builder
+          cache-from: flyteorg/${{ github.event.repository.name }}:builder
+
+      - name: Build component image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          tags: flyteorg/${{ github.event.repository.name }}:latest
+          target: builder
+          cache-from: flyteorg/${{ github.event.repository.name }}:builder
 
       - name: Tag and cache docker image
         run: mkdir -p /tmp/tmp/docker-images && docker save flyteorg/${{ github.event.repository.name }}:builder -o /tmp/tmp/docker-images/snapshot-builder.tar && docker save flyteorg/${{ github.event.repository.name }}:latest -o /tmp/tmp/docker-images/snapshot.tar
