@@ -26,7 +26,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.FLYTE_BOT_PAT }}
         run: make install && make test_unit_codecov
       - name: Push CodeCov
-        uses: codecov/codecov-action@v1.5.2
+        uses: codecov/codecov-action@v3.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.FLYTE_BOT_PAT }}        
         with:
