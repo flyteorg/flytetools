@@ -26,10 +26,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.FLYTE_BOT_PAT }}
         run: make install && make test_unit_codecov
       - name: Push CodeCov
-        uses: codecov/codecov-action@v3.1.0
+        uses: codecov/codecov-action@v3.1.1
         env:
           GITHUB_TOKEN: ${{ secrets.FLYTE_BOT_PAT }}        
         with:
           file: coverage.txt
           flags: unittests
-          fail_ci_if_error: true
+          fail_ci_if_error: false
