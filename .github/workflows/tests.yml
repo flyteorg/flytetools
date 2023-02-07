@@ -21,8 +21,6 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: ${{ inputs.go-version }}
-          stable: true
-          check-latest: true
       - name: Unit Tests
         env:
           GITHUB_TOKEN: ${{ secrets.FLYTE_BOT_PAT }}
