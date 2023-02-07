@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       go-version:
-        default: "1.18"
+        default: "1.19"
         required: false
         type: string
     secrets:
