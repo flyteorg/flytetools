@@ -31,7 +31,7 @@ jobs:
     name: Register Examples
     runs-on: flyteorg-infra
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup flytectl
         uses: unionai/flytectl-setup-action@v0.0.1
       - name: Create secret
@@ -53,9 +53,9 @@ jobs:
     needs: ["register-examples"]
     runs-on: flyteorg-infra
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.8
       - name: Setup Flytekit

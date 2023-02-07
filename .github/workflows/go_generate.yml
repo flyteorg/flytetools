@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       go-version:
-        default: "1.18"
+        default: "1.19"
         required: false
         type: string
 jobs:
@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Go Generate
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - uses: arduino/setup-protoc@v1
       - uses: bufbuild/buf-setup-action@v1
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v3
         with:
           go-version: ${{ inputs.go-version }}
       - name: Go generate and diff
