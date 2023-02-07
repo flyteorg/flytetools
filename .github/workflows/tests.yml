@@ -7,8 +7,6 @@ on:
         default: "1.19"
         required: false
         type: string
-        stable: true
-        check-latest: true
     secrets:
       FLYTE_BOT_PAT:
         required: true
@@ -23,6 +21,8 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: ${{ inputs.go-version }}
+          stable: true
+          check-latest: true
       - name: Unit Tests
         env:
           GITHUB_TOKEN: ${{ secrets.FLYTE_BOT_PAT }}
