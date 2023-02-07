@@ -7,6 +7,7 @@ on:
         default: "1.19"
         required: false
         type: string
+        stable: false
     secrets:
       FLYTE_BOT_PAT:
         required: true
