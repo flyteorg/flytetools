@@ -11,6 +11,10 @@ on:
         description: "Cache key for docker image"
         required: true
         type: string
+  pull_request:
+    branches:
+      - master
+
 jobs:
   endtoend:
     name: End to End tests
