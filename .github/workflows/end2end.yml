@@ -36,6 +36,7 @@ jobs:
           flytectl sandbox start --source=$(pwd)
       - name: Prime docker cache
         run: |
+          flytectl sandbox exec -- docker version
           flytectl sandbox exec -- docker load -i /root/snapshot.tar
       - name: Setup Flytekit
         run: |
