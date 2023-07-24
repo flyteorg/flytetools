@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       go-version:
-        default: "1.19"
+        default: "1.19.10"
         required: false
         type: string
 jobs:
