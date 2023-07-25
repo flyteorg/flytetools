@@ -71,22 +71,22 @@ jobs:
                   type_system/type_system/schema.py \
                   type_system/type_system/typed_schema.py ;
           do
-            pyflyte --config ./boilerplate/flyte/end2end/functional-test-config.yaml \
-                register \
-                --project flytesnacks \
-                --domain development \
-                --image cr.flyte.org/flyteorg/flytekit:py3.11-latest \
-                --version ${{ env.FLYTESNACKS_VERSION }} \
-                flytesnacks/examples/$f;
+              pyflyte --config ./boilerplate/flyte/end2end/functional-test-config.yaml \
+                  register \
+                  --project flytesnacks \
+                  --domain development \
+                  --image cr.flyte.org/flyteorg/flytekit:py3.11-latest \
+                  --version ${{ env.FLYTESNACKS_VERSION }} \
+                  flytesnacks/examples/$f;
           done
-       - name: Register all flytesnacks examples
-         if: ${{ inputs.priorities != 'P0' }}
-         uses: unionai/flyte-register-action@v0.0.2
-         with:
-           flytesnacks: true
-           project: flytesnacks
-           version: ${{ env.FLYTESNACKS_VERSION }}
-           domain: development
+       # - name: Register all flytesnacks examples
+       #   if: ${{ inputs.priorities != 'P0' }}
+       #   uses: unionai/flyte-register-action@v0.0.2
+       #   with:
+       #     flytesnacks: true
+       #     project: flytesnacks
+       #     version: ${{ env.FLYTESNACKS_VERSION }}
+       #     domain: development
       - name: Pre Upgrade Tests
         if: ${{ github.event.repository.name == 'flyteadmin' }}
         env:
