@@ -16,7 +16,7 @@ jobs:
     name: End to End tests
     runs-on: ubuntu-latest
     env:
-      FLYTESNACKS_VERSION: ''
+      FLYTESNACKS_VERSION: ""
     steps:
       - name: Set latest Flytesnacks release
         if: ${{ env.FLYTESNACKS_VERSION == '' }}
@@ -59,18 +59,17 @@ jobs:
       - name: Register P0 tests
         if: ${{ inputs.priorities == 'P0' }}
         run: |
-          for f in basics/basics/basic_workflow.py \
-                  basics/basics/deck.py \
+          for f in \
                   basics/basics/hello_world.py \
-                  basics/basics/lp.py \
+                  basics/basics/workflow.py \
                   basics/basics/named_outputs.py \
-                  control_flow/control_flow/chain_entities.py \
-                  control_flow/control_flow/dynamics.py \
-                  control_flow/control_flow/map_task.py \
-                  control_flow/control_flow/subworkflows.py \
-                  type_system/type_system/custom_objects.py \
-                  type_system/type_system/schema.py \
-                  type_system/type_system/typed_schema.py ;
+                  advanced_composition/advanced_composition/chain_entities.py \
+                  advanced_composition/advanced_composition/dynamics.py \
+                  advanced_composition/advanced_composition/map_task.py \
+                  advanced_composition/advanced_composition/subworkflows.py \
+                  data_types_and_io/data_types_and_io/custom_objects.py \
+                  data_types_and_io/data_types_and_io/schema.py \
+                  data_types_and_io/data_types_and_io/typed_schema.py ;
           do
               pyflyte --config ./boilerplate/flyte/end2end/functional-test-config.yaml \
                   register \
@@ -84,10 +83,10 @@ jobs:
         if: ${{ inputs.priorities != 'P0' }}
         uses: unionai/flyte-register-action@v0.0.2
         with:
-         flytesnacks: true
-         project: flytesnacks
-         version: ${{ env.FLYTESNACKS_VERSION }}
-         domain: development
+          flytesnacks: true
+          project: flytesnacks
+          version: ${{ env.FLYTESNACKS_VERSION }}
+          domain: development
       - name: Pre Upgrade Tests
         if: ${{ github.event.repository.name == 'flyteadmin' }}
         env:
