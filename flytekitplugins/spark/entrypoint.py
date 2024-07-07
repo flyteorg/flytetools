@@ -51,3 +51,5 @@ def main():
 if __name__ == "__main__":
     # main()
     print(os.getcwd())
+    print(os.getenv("PYTHONPATH"))
+    main()
