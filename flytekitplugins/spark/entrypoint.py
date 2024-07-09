@@ -49,8 +49,7 @@ def main():
 
 
 if __name__ == "__main__":
-    # main()
     print(os.getcwd())
-    print(os.chdir("/databricks/driver"))
+    print(os.chdir("/root"))
     print(os.getenv("PYTHONPATH"))
     main()
