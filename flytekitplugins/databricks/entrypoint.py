@@ -5,7 +5,6 @@ order to download the input proto before running spark job and upload the output
 import os
 import sys
 from typing import List
-import shutil
 
 import click
 from flytekit.bin.entrypoint import fast_execute_task_cmd as _fast_execute_task_cmd
