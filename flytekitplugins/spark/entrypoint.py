@@ -5,6 +5,7 @@ order to download the input proto before running spark job and upload the output
 import os
 import sys
 from typing import List
+import shutil
 
 import click
 from flytekit.bin.entrypoint import fast_execute_task_cmd as _fast_execute_task_cmd
@@ -50,6 +51,8 @@ def main():
 
 if __name__ == "__main__":
     print(os.getcwd())
-    print(os.chdir("/root"))
+    shutil.copytree("/root", "/databricks/driver")
+    os.chdir("/databricks/driver")
+    print(os.getcwd())
     print(os.getenv("PYTHONPATH"))
     main()
