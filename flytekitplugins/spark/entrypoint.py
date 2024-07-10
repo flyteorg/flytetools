@@ -50,10 +50,7 @@ def main():
 
 
 if __name__ == "__main__":
-    print(os.getcwd())
-    # shutil.copytree("/root", "/databricks/driver", dirs_exist_ok=True)
-    # os.chdir("/databricks/driver")
     os.chdir("/root")
-    print(os.getcwd())
-    print(os.getenv("PYTHONPATH"))
+    print("current directory:", os.getcwd())
+    print("PYTHONPATH:": os.getenv("PYTHONPATH"))
     main()
