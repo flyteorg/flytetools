@@ -52,5 +52,5 @@ if __name__ == "__main__":
     # https://docs.databricks.com/en/files/cwd-dbr-14.html
     # Databricks changes the working_dir in the image to a random path. To allow Flytekit to find the module, we need to change the current directory to /root, where the ImageSpec will copy the source code to.
     os.chdir("/root")
-    print("PYTHONPATH:": os.getenv("PYTHONPATH"))
+    print("PYTHONPATH:", os.getenv("PYTHONPATH"))
     main()
