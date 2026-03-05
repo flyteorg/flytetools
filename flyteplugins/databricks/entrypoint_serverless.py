@@ -40,6 +40,29 @@ DEFAULT_CREDENTIAL_PROVIDER = None  # e.g., "my-credential-provider-name"
 # =============================================================================
 
 
+def prioritize_databricks_python_path():
+    """
+    Prioritize Databricks' native Python packages over pip-installed ones.
+
+    Must be called BEFORE any pyspark imports so the Databricks-provided
+    PySpark (which understands Spark Connect URIs) is used instead of a
+    pip-installed version.
+    """
+    db_paths = [
+        "/databricks/python/lib/python3.12/site-packages",
+        "/databricks/python/lib/python3.11/site-packages",
+        "/databricks/python/lib/python3.10/site-packages",
+    ]
+
+    for db_path in db_paths:
+        if os.path.exists(db_path):
+            if db_path in sys.path:
+                sys.path.remove(db_path)
+            sys.path.insert(0, db_path)
+            print(f"[Flyte] Prioritized Databricks Python path: {db_path}")
+            break
+
+
 def parse_credential_provider_from_args():
     """
     Parse the credential provider from command-line arguments.
@@ -186,23 +209,7 @@ def setup_spark_session():
     spark_remote = os.environ.get("SPARK_REMOTE")
     if spark_remote:
         print(f"[Flyte] SPARK_REMOTE: {spark_remote}")
-    
-    # CRITICAL: Prioritize Databricks' native Python path FIRST
-    # This ensures we use Databricks' PySpark, not pip-installed version
-    db_paths = [
-        "/databricks/python/lib/python3.12/site-packages",
-        "/databricks/python/lib/python3.11/site-packages", 
-        "/databricks/python/lib/python3.10/site-packages",
-    ]
-    
-    for db_path in db_paths:
-        if os.path.exists(db_path):
-            if db_path in sys.path:
-                sys.path.remove(db_path)
-            sys.path.insert(0, db_path)
-            print(f"[Flyte] Prioritized Databricks Python path: {db_path}")
-            break
-    
+
     spark = None
     
     # Method 1: Use SparkSession.builder.getOrCreate() (standard approach)
@@ -266,24 +273,40 @@ def setup_environment():
 
 
 def download_and_extract_distribution(additional_distribution: str, dest_dir: str):
-    """Download and extract the tarball from S3."""
+    """Download and extract the code distribution tarball.
+
+    Tries flytekit's download_distribution first (handles all storage backends),
+    then falls back to a manual fsspec download if flytekit is unavailable.
+    """
+    os.makedirs(dest_dir, exist_ok=True)
+
+    # Primary: use flytekit's download_distribution (same as fast_execute_task_cmd)
+    try:
+        from flytekit.tools.fast_registration import download_distribution
+
+        print(f"[Flyte] Downloading distribution via flytekit: {additional_distribution}")
+        download_distribution(additional_distribution, dest_dir)
+        print(f"[Flyte] Extracted to: {dest_dir}")
+        return
+    except Exception as e:
+        print(f"[Flyte] flytekit download_distribution failed ({e}), falling back to fsspec")
+
+    # Fallback: use fsspec with auto-detected filesystem
     import tarfile
     import tempfile
+
     import fsspec
-    
-    os.makedirs(dest_dir, exist_ok=True)
-    
-    with tempfile.NamedTemporaryFile(suffix='.tar.gz', delete=False) as tmp:
+
+    with tempfile.NamedTemporaryFile(suffix=".tar.gz", delete=False) as tmp:
         tmp_path = tmp.name
-    
+
     try:
-        fs = fsspec.filesystem('s3')
-        s3_path = additional_distribution.replace('s3://', '')
-        print(f"[Flyte] Downloading: {s3_path}")
-        fs.get(s3_path, tmp_path)
+        fs, remote_path = fsspec.core.url_to_fs(additional_distribution)
+        print(f"[Flyte] Downloading via fsspec ({type(fs).__name__}): {remote_path}")
+        fs.get(remote_path, tmp_path)
         print(f"[Flyte] Downloaded to: {tmp_path}")
-        
-        with tarfile.open(tmp_path, 'r:gz') as tar:
+
+        with tarfile.open(tmp_path, "r:gz") as tar:
             tar.extractall(path=dest_dir)
         print(f"[Flyte] Extracted to: {dest_dir}")
     finally:
@@ -294,59 +317,50 @@ def download_and_extract_distribution(additional_distribution: str, dest_dir: st
 def execute_flyte_task_directly(args: list):
     """
     Execute Flyte task directly to preserve SparkSession.
-    
-    This is the key to making Spark work in Databricks serverless with Flyte.
-    fast_execute_task_cmd clears Python state, losing the SparkSession.
-    By downloading the tarball and importing the module ourselves, we preserve
-    the SparkSession that was created by setup_spark_session().
+
+    Uses Click's ``make_parser`` (same parser that ``fast_execute_task_cmd`` uses)
+    to extract ``--additional-distribution`` and ``--dest-dir``, then runs the
+    inner ``pyflyte-execute`` command in-process so the SparkSession survives.
     """
     import importlib
-    
-    # Parse args: --additional-distribution <url> --dest-dir <dir> -- pyflyte-execute ...
-    additional_distribution = None
-    dest_dir = "."
-    execute_args = []
-    
-    i = 0
-    while i < len(args):
-        if args[i] == "--additional-distribution" and i + 1 < len(args):
-            additional_distribution = args[i + 1]
-            i += 2
-        elif args[i] == "--dest-dir" and i + 1 < len(args):
-            dest_dir = args[i + 1]
-            i += 2
-        elif args[i] == "--":
-            execute_args = args[i + 1:]
-            break
-        else:
-            i += 1
-    
-    # Extract task info for logging
+
+    import click
+    from flytekit.bin.entrypoint import execute_task_cmd, fast_execute_task_cmd
+
+    # Use Click's parser from fast_execute_task_cmd to parse args
+    click_ctx = click.Context(fast_execute_task_cmd, info_name="pyflyte-fast-execute")
+    parser = fast_execute_task_cmd.make_parser(click_ctx)
+    opts, remaining, _ = parser.parse_args(list(args))
+
+    additional_distribution = opts.get("additional_distribution")
+    dest_dir = opts.get("dest_dir") or "."
+    # remaining holds the unprocessed args (the pyflyte-execute ... command)
+    execute_args = list(remaining)
+
+    # Extract task module name for logging
     task_module = None
     for j, arg in enumerate(execute_args):
         if arg == "task-module" and j + 1 < len(execute_args):
             task_module = execute_args[j + 1]
             break
-    
+
     print(f"[Flyte] Executing task: {task_module}")
-    
+
     # Download and extract tarball
     if additional_distribution:
         download_and_extract_distribution(additional_distribution, dest_dir)
-    
+
     # Add to sys.path
     abs_dest = os.path.abspath(dest_dir)
     if abs_dest not in sys.path:
         sys.path.insert(0, abs_dest)
-    
+
     # Import task module in our context (preserves SparkSession)
     if task_module:
         importlib.import_module(task_module)
-    
-    # Execute via flytekit (handles inputs/outputs)
-    from flytekit.bin.entrypoint import execute_task_cmd
+
+    # Execute via flytekit's execute_task_cmd (handles inputs/outputs)
     exec_args = execute_args[1:] if execute_args and execute_args[0] == "pyflyte-execute" else execute_args
-    
     execute_task_cmd.main(exec_args, standalone_mode=False)
     return 0
 
@@ -402,7 +416,10 @@ def main():
     print("[Flyte] Serverless Entrypoint")
     print(f"[Flyte] Python: {sys.version.split()[0]}")
     print(f"[Flyte] Raw args: {sys.argv[1:]}")
-    
+
+    # Prioritize Databricks' native PySpark BEFORE any pyspark imports
+    prioritize_databricks_python_path()
+
     # Parse credential provider from command-line arguments
     credential_provider, remaining_args = parse_credential_provider_from_args()
     print(f"[Flyte] Executing: {' '.join(remaining_args[:3])}..." if len(remaining_args) > 3 else f"[Flyte] Executing: {' '.join(remaining_args)}")
